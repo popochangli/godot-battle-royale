@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://d3pr5axam40e3"]
+
+[ext_resource type="Script" uid="uid://b4e2w78ktqdif" path="res://enemy.gd" id="1_7k104"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_7xaro"]
+size = Vector2(50, 50)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7k104"]
+radius = 25.0
+
+[node name="Enemy" type="CharacterBody2D" unique_id=1041987038]
+script = ExtResource("1_7k104")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1087135345]
+modulate = Color(0.8384838, 2.9359758e-06, 3.85046e-07, 1)
+texture = SubResource("PlaceholderTexture2D_7xaro")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1416085300]
+shape = SubResource("CircleShape2D_7k104")
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=1553801515]
+offset_left = -24.0
+offset_top = -80.0
+offset_right = 26.0
+offset_bottom = -53.0
+max_value = 50.0
+value = 50.0
