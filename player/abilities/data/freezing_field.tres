@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://c1tvljg6k5vuo"]
+
+[ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_ability"]
+[ext_resource type="Script" uid="uid://uhhs42e5w3n" path="res://player/abilities/scripts/freezing_field.gd" id="2_script"]
+
+[resource]
+script = ExtResource("1_ability")
+ability_id = "freezing_field"
+display_name = "Freeze"
+cooldown = 10.0
+damage = 0
+indicator_color = Color(0.4, 0.8, 1, 1)
+ability_script = ExtResource("2_script")
+radius = 150.0
+range_distance = 0.0
+freeze_duration = 1.0
+cooldown_scale_percent = 0.1
+radius_scale_percent = 0.08
+duration_scale_percent = 0.15

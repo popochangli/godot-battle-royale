@@ -1,49 +1,49 @@
-[gd_scene format=3 uid="uid://c20s36aw8p3q4"]
+[gd_scene load_steps=7 format=3 uid="uid://c20s36aw8p3q4"]
 
-[ext_resource type="PackedScene" uid="uid://dmv1gp7w60gtu" path="res://player.tscn" id="1_0xm2m"]
-[ext_resource type="PackedScene" uid="uid://d3pr5axam40e3" path="res://enemy.tscn" id="2_h2yge"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0xm2m"]
-size = Vector2(100, 20)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_h2yge"]
-size = Vector2(150, 90)
+[ext_resource type="PackedScene" uid="uid://dmv1gp7w60gtu" path="res://player/player.tscn" id="1_0xm2m"]
+[ext_resource type="PackedScene" path="res://enemy/enemy_camp.tscn" id="3_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://rb6txehi0m3g" path="res://assets/tiles/tile_map_layer.tscn" id="3_h2yge"]
+[ext_resource type="Script" path="res://zone/zone_manager.gd" id="4_zone_mgr"]
+[ext_resource type="Script" path="res://zone/zone_visual.gd" id="5_zone_vis"]
+[ext_resource type="PackedScene" uid="uid://dx8qw2m5p7h3k" path="res://ui/game_hud.tscn" id="6_game_hud"]
+[ext_resource type="Script" path="res://collectibles/world_spawner.gd" id="7_world_spawner"]
 
 [node name="Main" type="Node2D" unique_id=1255103164]
 
+[node name="TileMapLayer" parent="." unique_id=1737278191 instance=ExtResource("3_h2yge")]
+
+[node name="ZoneVisual" type="CanvasLayer" parent="."]
+script = ExtResource("5_zone_vis")
+
 [node name="Player" parent="." unique_id=1831319049 instance=ExtResource("1_0xm2m")]
-position = Vector2(271, 51)
+position = Vector2(531, 182)
+collision_layer = 2
 
-[node name="Enemy" parent="." unique_id=1041987038 instance=ExtResource("2_h2yge")]
-position = Vector2(48, 1)
+[node name="EnemyCamp" parent="." unique_id=546603506 instance=ExtResource("3_1bvp3")]
+position = Vector2(878, -148)
 
-[node name="Enemy2" parent="." unique_id=197472014 instance=ExtResource("2_h2yge")]
-position = Vector2(-93, 39)
+[node name="EnemyCamp2" parent="." unique_id=1540821432 instance=ExtResource("3_1bvp3")]
+position = Vector2(-154, 91)
 
-[node name="Wall" type="StaticBody2D" parent="." unique_id=1349695734]
-position = Vector2(154, 45)
+[node name="EnemyCamp3" parent="." unique_id=1480454598 instance=ExtResource("3_1bvp3")]
+position = Vector2(2308, 1475)
 
-[node name="ColorRect" type="ColorRect" parent="Wall" unique_id=250981991]
-offset_left = -203.0
-offset_top = -150.0
-offset_right = -103.0
-offset_bottom = -130.0
-color = Color(0.58046496, 0.4848953, 0.0071497266, 1)
+[node name="EnemyCamp4" parent="." unique_id=802060605 instance=ExtResource("3_1bvp3")]
+position = Vector2(322, 1635)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall" unique_id=398753131]
-position = Vector2(-154, -141)
-shape = SubResource("RectangleShape2D_0xm2m")
+[node name="EnemyCamp5" parent="." unique_id=1502384986 instance=ExtResource("3_1bvp3")]
+position = Vector2(2159, 24)
 
-[node name="Wall2" type="StaticBody2D" parent="." unique_id=271300636]
-position = Vector2(154, 45)
+[node name="EnemyCamp6" parent="." unique_id=1063595772 instance=ExtResource("3_1bvp3")]
+position = Vector2(1386, 477)
 
-[node name="ColorRect" type="ColorRect" parent="Wall2" unique_id=1973764322]
-offset_left = -231.0
-offset_top = 38.0
-offset_right = -81.0
-offset_bottom = 128.0
-color = Color(0.58046496, 0.4848953, 0.0071497266, 1)
+[node name="EnemyCamp7" parent="." unique_id=1624564701 instance=ExtResource("3_1bvp3")]
+position = Vector2(21, 1097)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall2" unique_id=577397238]
-position = Vector2(-160, 80)
-shape = SubResource("RectangleShape2D_h2yge")
+[node name="ZoneManager" type="Node" parent="." groups=["zone_manager"]]
+script = ExtResource("4_zone_mgr")
+
+[node name="GameHUD" parent="." instance=ExtResource("6_game_hud")]
+
+[node name="WorldSpawner" type="Node" parent="."]
+script = ExtResource("7_world_spawner")

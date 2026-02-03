@@ -1,0 +1,84 @@
+[gd_scene format=3 uid="uid://bo5ugd0osq0oi"]
+
+[ext_resource type="Script" uid="uid://1yhsve1eukj" path="res://ui/spawn_select.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://rb6txehi0m3g" path="res://assets/tiles/tile_map_layer.tscn" id="2_tilemap"]
+
+[node name="SpawnSelect" type="Control" unique_id=812192274]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1336903499]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.15, 1)
+
+[node name="TitleLabel" type="Label" parent="." unique_id=368262809]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 20.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+text = "SELECT SPAWN LOCATION"
+horizontal_alignment = 1
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1016010935]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 60.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=268516388]
+handle_input_locally = false
+size = Vector2i(640, 230)
+render_target_update_mode = 4
+
+[node name="TileMapLayer" parent="SubViewportContainer/SubViewport" unique_id=70875673 instance=ExtResource("2_tilemap")]
+
+[node name="Camera2D" type="Camera2D" parent="SubViewportContainer/SubViewport" unique_id=1457146956]
+
+[node name="ConfirmButton" type="Button" parent="." unique_id=1985729877]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -60.0
+offset_right = 100.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "CONFIRM"
+
+[node name="SpawnMarker" type="ColorRect" parent="." unique_id=622742942]
+visible = false
+z_index = 100
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+mouse_filter = 2
+color = Color(1, 0.2, 0.2, 1)
+
+[connection signal="gui_input" from="SubViewportContainer" to="." method="_on_sub_viewport_container_gui_input"]
+[connection signal="pressed" from="ConfirmButton" to="." method="_on_confirm_button_pressed"]
