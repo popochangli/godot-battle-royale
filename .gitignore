@@ -10,5 +10,7 @@ export_presets.cfg
 data_*/
 *.translation
 
+*.tmp
+
 # General
 .DS_Store

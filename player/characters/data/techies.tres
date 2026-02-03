@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://b0wh6ncbib0y1"]
+
+[ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_character"]
+[ext_resource type="Resource" uid="uid://dk3efr1ne00y1" path="res://player/abilities/data/bomb.tres" id="2_primary"]
+[ext_resource type="Resource" uid="uid://bn2p4q5c3s81s" path="res://player/abilities/data/proximity_mine.tres" id="3_secondary"]
+
+[resource]
+script = ExtResource("1_character")
+character_id = "techies"
+display_name = "Techies"
+max_health = 90
+speed = 200.0
+primary_ability = ExtResource("2_primary")
+secondary_ability = ExtResource("3_secondary")
+hp_per_level = 10

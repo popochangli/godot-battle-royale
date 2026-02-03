@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://dk3efr1ne00y1"]
+
+[ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_ability"]
+[ext_resource type="Script" uid="uid://j65k7wo882df" path="res://player/abilities/scripts/bomb.gd" id="2_script"]
+
+[resource]
+script = ExtResource("1_ability")
+ability_id = "bomb"
+display_name = "Bomb"
+cooldown = 3.0
+damage = 35
+indicator_color = Color(1, 0.4, 0, 1)
+ability_script = ExtResource("2_script")
+radius = 80.0
+range_distance = 200.0
+damage_scale_percent = 0.1
+cooldown_scale_percent = 0.08
+radius_scale_percent = 0.05

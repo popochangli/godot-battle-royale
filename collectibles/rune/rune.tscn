@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://vuf4thbi6f62"]
+
+[ext_resource type="Script" uid="uid://c3cpx7v7u0go0" path="res://collectibles/rune/rune.gd" id="1_rune"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 16.0
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_06fdt"]
+
+[node name="Rune" type="Area2D" unique_id=1286819017]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_rune")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1835957410]
+shape = SubResource("CircleShape2D_1")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=730903439]
+modulate = Color(6.6420434e-06, 0.9919017, 0.5740686, 1)
+scale = Vector2(32, 32)
+texture = SubResource("CanvasTexture_06fdt")
+metadata/_aseprite_wizard_interface_config_ = {
+"layer_section": false,
+"pending_changes": {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 0,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "",
+"source_uid": -1
+}
+}

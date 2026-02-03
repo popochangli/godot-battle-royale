@@ -1,0 +1,111 @@
+[gd_scene format=3 uid="uid://dmv1gp7w60gtu"]
+
+[ext_resource type="Script" uid="uid://b0vu53expia0g" path="res://player/player.gd" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://c28rw4t4ytnfd" path="res://player/cooldown_indicator.gd" id="2_cooldown"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_rkbax"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_onrkg"]
+radius = 16.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_rkbax"]
+font_size = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_g1dw6"]
+font_size = 8
+
+[node name="Player" type="CharacterBody2D" unique_id=1571856534]
+collision_mask = 49
+script = ExtResource("1_4flbx")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=763063774]
+scale = Vector2(32, 32)
+texture = SubResource("CanvasTexture_rkbax")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1626532441]
+shape = SubResource("CircleShape2D_onrkg")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=647648378]
+zoom = Vector2(0.5, 0.5)
+
+[node name="CooldownUI" type="CanvasLayer" parent="." unique_id=1561107084]
+
+[node name="HealthBar" type="ProgressBar" parent="CooldownUI" unique_id=2028313212]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -37.0
+offset_right = 150.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+value = 100.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CooldownUI" unique_id=1113277389]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -42.0
+offset_top = -100.0
+offset_right = 45.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 15
+
+[node name="PrimaryContainer" type="VBoxContainer" parent="CooldownUI/HBoxContainer" unique_id=1772017309]
+layout_mode = 2
+alignment = 1
+
+[node name="PrimaryIndicator" type="Control" parent="CooldownUI/HBoxContainer/PrimaryContainer" unique_id=1611583214]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+script = ExtResource("2_cooldown")
+cooldown_max = 0.5
+indicator_size = 25.0
+
+[node name="PrimaryLabel" type="Label" parent="CooldownUI/HBoxContainer/PrimaryContainer" unique_id=461261718]
+layout_mode = 2
+text = "Primary"
+label_settings = SubResource("LabelSettings_rkbax")
+horizontal_alignment = 1
+
+[node name="SecondaryContainer" type="VBoxContainer" parent="CooldownUI/HBoxContainer" unique_id=583824701]
+layout_mode = 2
+alignment = 1
+
+[node name="SecondaryIndicator" type="Control" parent="CooldownUI/HBoxContainer/SecondaryContainer" unique_id=446449782]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+script = ExtResource("2_cooldown")
+indicator_size = 25.0
+
+[node name="SecondaryLabel" type="Label" parent="CooldownUI/HBoxContainer/SecondaryContainer" unique_id=153034710]
+layout_mode = 2
+text = "Secondary"
+label_settings = SubResource("LabelSettings_g1dw6")
+horizontal_alignment = 1
+
+[node name="LevelContainer" type="VBoxContainer" parent="CooldownUI" unique_id=1637079291]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -55.0
+offset_right = 120.0
+offset_bottom = -10.0
+grow_vertical = 0
+
+[node name="LevelLabel" type="Label" parent="CooldownUI/LevelContainer" unique_id=1318889654]
+layout_mode = 2
+text = "Lv 1"
+
+[node name="XPBar" type="ProgressBar" parent="CooldownUI/LevelContainer" unique_id=623560400]
+layout_mode = 2
+max_value = 50.0
+show_percentage = false
