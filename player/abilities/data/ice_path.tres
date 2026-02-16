@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://bovvx13hxmbdq"]
+
+[ext_resource type="Script" uid="uid://6xdclkhdrvok" path="res://player/abilities/scripts/ice_path.gd" id="1_oax3u"]
+[ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_omae4"]
+
+[resource]
+script = ExtResource("1_omae4")
+cooldown = 5.0
+indicator_color = Color(1.5979409e-05, 0.44448027, 0.7991649, 1)
+ability_script = ExtResource("1_oax3u")
+metadata/_custom_type_script = "uid://cuyhc4ww30jbe"
