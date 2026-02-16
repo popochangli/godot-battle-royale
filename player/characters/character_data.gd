@@ -3,6 +3,8 @@ extends Resource
 
 @export var character_id: String = ""
 @export var display_name: String = ""
+@export_multiline var description: String = ""
+@export var icon: Texture2D
 @export var max_health: int = 100
 @export var speed: float = 300.0
 @export var primary_ability: Resource

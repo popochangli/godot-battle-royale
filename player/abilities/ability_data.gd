@@ -3,6 +3,8 @@ extends Resource
 
 @export var ability_id: String = ""
 @export var display_name: String = ""
+@export_multiline var description: String = ""
+@export var icon: Texture2D
 @export var cooldown: float = 1.0
 @export var damage: int = 10
 @export var indicator_color: Color = Color.WHITE
