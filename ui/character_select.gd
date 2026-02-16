@@ -2,7 +2,8 @@ extends Control
 
 const CHARACTER_PATHS = [
 	"res://player/characters/data/crystal_maiden.tres",
-	"res://player/characters/data/techies.tres"
+	"res://player/characters/data/techies.tres",
+	"res://player/characters/data/sniper.tres"
 ]
 
 @onready var button_container = $CenterContainer/VBoxContainer/ButtonContainer

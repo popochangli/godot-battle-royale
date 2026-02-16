@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://dfr66j2txliwf"]
+
+[ext_resource type="Script" uid="uid://7lk13fijost4" path="res://player/abilities/scripts/shrapnel.gd" id="1_5qxgf"]
+[ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="2_87ojm"]
+
+[resource]
+script = ExtResource("2_87ojm")
+damage = 20
+indicator_color = Color(0.9999998, 0.52732086, 0.24884051, 1)
+ability_script = ExtResource("1_5qxgf")
+metadata/_custom_type_script = "uid://cuyhc4ww30jbe"

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://bm3py3t6aqsvu"]
+
+[ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_7n5jh"]
+[ext_resource type="Resource" uid="uid://dfr66j2txliwf" path="res://player/abilities/data/shrapnel.tres" id="1_pna3j"]
+[ext_resource type="Resource" uid="uid://cwcx35aqcqa2s" path="res://player/abilities/data/assassinate.tres" id="3_6mnbv"]
+
+[resource]
+script = ExtResource("1_7n5jh")
+character_id = "sniper"
+display_name = "Sniper"
+max_health = 80
+speed = 310.0
+primary_ability = ExtResource("1_pna3j")
+secondary_ability = ExtResource("3_6mnbv")
+metadata/_custom_type_script = "uid://7ga18kcriays"
