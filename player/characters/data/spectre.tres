@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://c0wkijuyhdkaj"]
+
+[ext_resource type="Resource" uid="uid://o8uyfevcgn3l" path="res://player/abilities/data/spectral_dagger.tres" id="1_8prdy"]
+[ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_45vyi"]
+[ext_resource type="Resource" uid="uid://b1rn7fwgw6dyj" path="res://player/abilities/data/shadow_step.tres" id="3_gr77k"]
+
+[resource]
+script = ExtResource("1_45vyi")
+character_id = "spectre"
+display_name = "Spectre"
+max_health = 200
+primary_ability = ExtResource("1_8prdy")
+secondary_ability = ExtResource("3_gr77k")
+metadata/_custom_type_script = "uid://7ga18kcriays"

@@ -4,7 +4,8 @@ const CHARACTER_PATHS = [
 	"res://player/characters/data/crystal_maiden.tres",
 	"res://player/characters/data/techies.tres",
 	"res://player/characters/data/sniper.tres",
-	"res://player/characters/data/jakiro.tres"
+	"res://player/characters/data/jakiro.tres",
+	"res://player/characters/data/spectre.tres",
 ]
 
 @onready var button_container = $CenterContainer/VBoxContainer/ButtonContainer

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://b1rn7fwgw6dyj"]
+
+[ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_4p5i0"]
+[ext_resource type="Script" uid="uid://nbifrnf3g4mj" path="res://player/abilities/scripts/shadow_step.gd" id="1_14mlc"]
+
+[resource]
+script = ExtResource("1_4p5i0")
+indicator_color = Color(0.39584392, 0.00011724651, 0.40038067, 1)
+ability_script = ExtResource("1_14mlc")
+metadata/_custom_type_script = "uid://cuyhc4ww30jbe"
