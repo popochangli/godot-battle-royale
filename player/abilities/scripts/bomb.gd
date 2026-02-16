@@ -164,6 +164,8 @@ static func execute(caster: Node2D, data: AbilityData) -> void:
 
 	var projectile = Area2D.new()
 	projectile.add_to_group("projectile")
+	projectile.collision_layer = 0
+	projectile.collision_mask = 2
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()
@@ -202,6 +204,8 @@ static func _explode(projectile: Area2D, caster: Node2D, data: AbilityData, scal
 
 	var explosion = Area2D.new()
 	explosion.add_to_group("explosion")
+	explosion.collision_layer = 0
+	explosion.collision_mask = 2
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()

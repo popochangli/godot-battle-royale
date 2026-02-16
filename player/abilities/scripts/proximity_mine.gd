@@ -168,6 +168,8 @@ static func execute(caster: Node2D, data: AbilityData) -> void:
 
 	var mine = Area2D.new()
 	mine.add_to_group("techies_mines")
+	mine.collision_layer = 0
+	mine.collision_mask = 2
 	mine.set_meta("owner_id", owner_id)
 	mine.set_meta("scaled_damage", scaled_damage)
 
@@ -225,6 +227,8 @@ static func _do_explosion(caster: Node2D, data: AbilityData, explosion_pos: Vect
 
 	var explosion = Area2D.new()
 	explosion.add_to_group("explosion")
+	explosion.collision_layer = 0
+	explosion.collision_mask = 2
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()

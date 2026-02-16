@@ -8,7 +8,9 @@ static func execute(caster: Node2D, data: AbilityData) -> void:
 	var area = Area2D.new()
 	area.monitorable = false
 	area.monitoring = true
-	
+	area.collision_layer = 0
+	area.collision_mask = 2
+
 	var line = Line2D.new()
 	line.points = PackedVector2Array([Vector2.ZERO, Vector2(distance, 0)])
 	line.width = 40.0

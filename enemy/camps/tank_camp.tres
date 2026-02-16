@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CampConfig" format=3 uid="uid://dnle5et8c1biw"]
+
+[ext_resource type="Resource" uid="uid://brhyj4j63wl6" path="res://enemy/skills/data/ground_slam_skill.tres" id="1_8fg5e"]
+[ext_resource type="Script" uid="uid://ctls3mq27skmi" path="res://enemy/resources/camp_config.gd" id="1_bj0bq"]
+[ext_resource type="Resource" uid="uid://ba4x5bovkq6e2" path="res://enemy/stats/tank_leader_stats.tres" id="2_8qgm4"]
+[ext_resource type="Resource" uid="uid://boejij3vrosbb" path="res://enemy/stats/tank_minion_stats.tres" id="3_noxev"]
+
+[resource]
+script = ExtResource("1_bj0bq")
+camp_name = "Tank Camp"
+leader_skill = ExtResource("1_8fg5e")
+leader_stats = ExtResource("2_8qgm4")
+minion_stats = ExtResource("3_noxev")
+camp_color = Color(0.36801735, 0.3637883, 0.34109977, 1)
+difficulty_tier = 2
+metadata/_custom_type_script = "uid://ctls3mq27skmi"

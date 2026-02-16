@@ -16,7 +16,9 @@ static func execute(caster: Node2D, data: AbilityData) -> void:
 static func _spawn_breath_wave(caster: Node2D, data: AbilityData, direction: Vector2, type: String) -> void:
 	var projectile = Area2D.new()
 	projectile.add_to_group("projectile")
-	
+	projectile.collision_layer = 0
+	projectile.collision_mask = 2
+
 	var sprite = Polygon2D.new()
 	if type == "fire":
 		sprite.color = Color(1.0, 0.4, 0.0, 0.8)

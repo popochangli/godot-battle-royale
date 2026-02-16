@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://bmahmeujkmf46"]
+
+[ext_resource type="Script" uid="uid://cqwsnfrstoffx" path="res://enemy/resources/enemy_stats.gd" id="1_rs3x7"]
+[ext_resource type="Texture2D" uid="uid://bvoqhgn32fmnk" path="res://assets/characters/enemies/mage_minion/east.png" id="dir_e"]
+[ext_resource type="Texture2D" uid="uid://crd4i2aobbo5v" path="res://assets/characters/enemies/mage_minion/north.png" id="dir_n"]
+[ext_resource type="Texture2D" uid="uid://dm3bniyesxmn3" path="res://assets/characters/enemies/mage_minion/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" uid="uid://bgjdmsfoqk8nt" path="res://assets/characters/enemies/mage_minion/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" uid="uid://cc07h7tkeowkb" path="res://assets/characters/enemies/mage_minion/south.png" id="dir_s"]
+[ext_resource type="Texture2D" uid="uid://f0m7ywv0td3v" path="res://assets/characters/enemies/mage_minion/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" uid="uid://b0hvvlhuai2h0" path="res://assets/characters/enemies/mage_minion/south-west.png" id="dir_sw"]
+[ext_resource type="Texture2D" uid="uid://d1noougpkluu0" path="res://assets/characters/enemies/mage_minion/west.png" id="dir_w"]
+
+[resource]
+script = ExtResource("1_rs3x7")
+max_health = 45
+speed = 130.0
+damage = 3
+attack_range = 180.0
+attack_cooldown = 2.5
+xp_value = 22
+sprite_scale = 0.9
+color_tint = Color(0.75913006, 0.31447494, 0.81574184, 1)
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])
+metadata/_custom_type_script = "uid://cqwsnfrstoffx"

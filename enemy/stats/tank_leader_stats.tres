@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://ba4x5bovkq6e2"]
+
+[ext_resource type="Script" uid="uid://cqwsnfrstoffx" path="res://enemy/resources/enemy_stats.gd" id="1_ja00h"]
+[ext_resource type="Texture2D" uid="uid://blvyjedtesa0j" path="res://assets/characters/enemies/tank_leader/east.png" id="dir_e"]
+[ext_resource type="Texture2D" uid="uid://ccnhc1qf2crtd" path="res://assets/characters/enemies/tank_leader/north.png" id="dir_n"]
+[ext_resource type="Texture2D" uid="uid://cy4dbuq2hfn8x" path="res://assets/characters/enemies/tank_leader/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" uid="uid://4rna6aekwyqo" path="res://assets/characters/enemies/tank_leader/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" uid="uid://c600hodpqdt2j" path="res://assets/characters/enemies/tank_leader/south.png" id="dir_s"]
+[ext_resource type="Texture2D" uid="uid://dgyehylfflntq" path="res://assets/characters/enemies/tank_leader/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" uid="uid://53pxkdokf174" path="res://assets/characters/enemies/tank_leader/south-west.png" id="dir_sw"]
+[ext_resource type="Texture2D" uid="uid://b3jsdsylme6ri" path="res://assets/characters/enemies/tank_leader/west.png" id="dir_w"]
+
+[resource]
+script = ExtResource("1_ja00h")
+max_health = 200
+speed = 100.0
+damage = 15
+xp_value = 50
+sprite_scale = 1.3
+color_tint = Color(0.28702223, 0.2737773, 0.27712956, 1)
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])
+metadata/_custom_type_script = "uid://cqwsnfrstoffx"

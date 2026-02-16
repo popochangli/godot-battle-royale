@@ -6,7 +6,9 @@ static func execute(caster: Node2D, data: AbilityData) -> void:
 	
 	var projectile = Area2D.new()
 	projectile.add_to_group("projectile")
-	
+	projectile.collision_layer = 0
+	projectile.collision_mask = 2
+
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()
 	shape.radius = 4.0
@@ -27,15 +29,19 @@ static func execute(caster: Node2D, data: AbilityData) -> void:
 	var speed = 1500.0
 	var range_dist = data.range_distance
 	var duration = range_dist / speed
-	
+	var state = {"hit": false}
+
 	var tween = caster.create_tween()
 	var target_pos = caster.global_position + direction * range_dist
-	
+
 	tween.tween_property(projectile, "global_position", target_pos, duration)
 	tween.tween_callback(projectile.queue_free)
-	
+
 	projectile.body_entered.connect(func(body):
+		if state.hit:
+			return
 		if body != caster and body.has_method("take_damage"):
+			state.hit = true
 			body.take_damage(damage * 3, caster)
 			projectile.queue_free()
 	)

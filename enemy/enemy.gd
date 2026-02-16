@@ -1,6 +1,10 @@
 extends CharacterBody2D
 
-enum State { IDLE, PURSUING, RETURNING }
+enum State { IDLE, PURSUING, RETURNING, CASTING }
+
+# NEW: Resource exports
+@export var enemy_stats: EnemyStats
+@export var leader_skill: EnemySkillData  # null = minion, resource = leader
 
 @export var xp_value: int = 25
 
@@ -12,6 +16,10 @@ var damage = 10
 var attack_range = 50
 var attack_cooldown = 1.0
 var attack_timer = 0.0
+
+# NEW: Skill system
+var skill_timer: float = 0.0
+var is_leader: bool = false
 
 var is_invincible: bool = false
 var iframe_duration: float = 0.3
@@ -25,6 +33,9 @@ var slow_sources: Dictionary = {}
 var current_visual_state: String = "normal"
 var slow_effect_node: GPUParticles2D = null
 var freeze_effect_node: GPUParticles2D = null
+
+var has_direction_sprites: bool = false
+var facing_direction: Vector2 = Vector2.DOWN  # default facing south
 
 var burn_sources: Dictionary = {}
 var burn_tick_timer: float = 0.0
@@ -45,7 +56,36 @@ var patrol_radius: float = 80.0
 
 func _ready():
 	add_to_group("enemy")
-	original_modulate = $Sprite2D.modulate
+
+	# Set collision layer to 2 (not 1) so projectiles don't hit enemies
+	collision_layer = 2  # Enemy layer
+	collision_mask = 1   # Detect player layer
+
+	# NEW: Apply stats from resource if provided
+	if enemy_stats:
+		max_health = enemy_stats.max_health
+		base_speed = enemy_stats.speed
+		speed = base_speed
+		damage = enemy_stats.damage
+		attack_range = enemy_stats.attack_range
+		attack_cooldown = enemy_stats.attack_cooldown
+		xp_value = enemy_stats.xp_value
+		original_modulate = Color.WHITE
+
+		# Use direction sprites if available
+		if enemy_stats.direction_sprites.size() == 8:
+			has_direction_sprites = true
+			$Sprite2D.texture = enemy_stats.direction_sprites[0]  # south default
+			$Sprite2D.scale = Vector2(enemy_stats.sprite_scale, enemy_stats.sprite_scale)
+			$Sprite2D.modulate = Color.WHITE
+			$Sprite2D.rotation = 0
+		else:
+			$Sprite2D.modulate = Color.WHITE
+	else:
+		original_modulate = Color.WHITE
+
+	is_leader = leader_skill != null
+
 	health = max_health
 	health_bar.max_value = max_health
 	health_bar.value = max_health
@@ -58,11 +98,20 @@ func _physics_process(delta):
 	if attack_timer > 0:
 		attack_timer -= delta
 
+	# NEW: Skill cooldown
+	if skill_timer > 0:
+		skill_timer -= delta
+
 	_process_slow_timers(delta)
 	_process_burn_timers(delta)
 
 	if player == null:
 		player = get_tree().get_first_node_in_group("player")
+
+	# Try to use skill BEFORE movement so CASTING blocks movement this frame
+	# Don't cast when frozen
+	if is_leader and current_state == State.PURSUING and skill_timer <= 0 and not is_frozen:
+		use_skill()
 
 	match current_state:
 		State.IDLE:
@@ -71,6 +120,9 @@ func _physics_process(delta):
 			_process_pursuing_state(delta)
 		State.RETURNING:
 			_process_returning_state(delta)
+		State.CASTING:
+			velocity = Vector2.ZERO
+			move_and_slide()
 
 func _process_idle_state(delta):
 	if player:
@@ -90,7 +142,7 @@ func _process_idle_state(delta):
 			var direction = (idle_target - global_position).normalized()
 			velocity = direction * speed * 0.5
 			move_and_slide()
-			$Sprite2D.look_at(idle_target)
+			_update_facing(idle_target)
 	else:
 		velocity = Vector2.ZERO
 
@@ -109,10 +161,10 @@ func _process_pursuing_state(delta):
 	var direction = (player.global_position - global_position).normalized()
 	velocity = direction * speed
 	move_and_slide()
-	$Sprite2D.look_at(player.global_position)
+	_update_facing(player.global_position)
 
 	var distance = global_position.distance_to(player.global_position)
-	if distance < attack_range and attack_timer <= 0:
+	if distance < attack_range and attack_timer <= 0 and not is_frozen:
 		attack_player()
 		attack_timer = attack_cooldown
 
@@ -128,12 +180,48 @@ func _process_returning_state(_delta):
 	var direction = (camp_center - global_position).normalized()
 	velocity = direction * speed
 	move_and_slide()
-	$Sprite2D.look_at(camp_center)
+	_update_facing(camp_center)
 
 func _pick_new_idle_target():
+	# NEW: Collision avoidance - try multiple attempts to find clear position
+	var max_attempts = 5
+	for attempt in max_attempts:
+		var angle = randf() * TAU
+		var dist = randf() * patrol_radius
+		var target = camp_center + Vector2(cos(angle), sin(angle)) * dist
+
+		# Check if any enemy is near this target
+		var is_clear = true
+		for other in get_tree().get_nodes_in_group("enemy"):
+			if other != self and other.global_position.distance_to(target) < 40:
+				is_clear = false
+				break
+
+		if is_clear:
+			idle_target = target
+			return
+
+	# If all attempts fail, use the last target anyway
 	var angle = randf() * TAU
 	var dist = randf() * patrol_radius
 	idle_target = camp_center + Vector2(cos(angle), sin(angle)) * dist
+
+# Convert angle to 8-direction index: S, SE, E, NE, N, NW, W, SW
+func _update_facing(target_pos: Vector2) -> void:
+	var dir = (target_pos - global_position).normalized()
+	facing_direction = dir
+	if has_direction_sprites:
+		var angle = dir.angle()  # radians, 0 = right(east), PI/2 = down(south)
+		# Map angle to 8 directions. Subtract PI/2 to shift south to index 0.
+		var idx = wrapi(roundi((angle - PI / 2) / (PI / 4)), 0, 8)
+		# idx: 0=S, 1=SW, 2=W, 3=NW, 4=N, 5=NE, 6=E, 7=SE
+		# Array order: S(0), SE(1), E(2), NE(3), N(4), NW(5), W(6), SW(7)
+		var remap = [0, 7, 6, 5, 4, 3, 2, 1]
+		var sprite_idx = remap[idx]
+		$Sprite2D.texture = enemy_stats.direction_sprites[sprite_idx]
+		$Sprite2D.rotation = 0
+	else:
+		$Sprite2D.look_at(target_pos)
 
 func set_camp(camp_node: Node2D, center: Vector2, patrol_rad: float, leash: float, aggro_time: float):
 	camp = camp_node
@@ -143,16 +231,138 @@ func set_camp(camp_node: Node2D, center: Vector2, patrol_rad: float, leash: floa
 	aggro_timeout = aggro_time
 	_pick_new_idle_target()
 
+func _shoot_projectile(_direction: Vector2) -> void:
+	# Phase 1+3: Homing projectile that locks onto the current target (like Dota 2 auto-attack)
+	var locked_target = player  # Lock target at the moment of firing
+	if not locked_target:
+		return
+
+	var projectile = Area2D.new()
+	projectile.collision_layer = 0
+	projectile.collision_mask = 0  # Use distance-based hit detection
+
+	# Visible sprite (small arrow projectile)
+	var sprite = Sprite2D.new()
+	var img = Image.create(1, 1, false, Image.FORMAT_RGBA8)
+	img.fill(Color.WHITE)
+	var tex = ImageTexture.create_from_image(img)
+	sprite.texture = tex
+	sprite.centered = true
+	sprite.scale = Vector2(6, 8)
+	sprite.modulate = original_modulate if original_modulate != Color.WHITE else Color.RED
+	projectile.add_child(sprite)
+
+	# Add trail particles based on enemy color
+	var particles = _create_projectile_trail()
+	projectile.add_child(particles)
+
+	# Add to scene, then set position
+	get_parent().add_child(projectile)
+	projectile.global_position = global_position
+	var spawn_position = global_position
+
+	# Homing parameters
+	var proj_speed = 350.0
+	var hit_radius = 20.0
+	var max_lifetime = 4.0
+	var max_despawn_range = 600.0
+	var lifetime = 0.0
+	var damage_dealt = false
+	var enemy_damage = damage
+
+	# Use weakref for target (may die during flight)
+	var target_ref = weakref(locked_target)
+
+	# Timer-based homing update
+	var timer = Timer.new()
+	timer.wait_time = 0.016  # ~60 FPS
+	timer.one_shot = false
+	projectile.add_child(timer)
+
+	timer.timeout.connect(func():
+		if damage_dealt or not is_instance_valid(projectile):
+			return
+
+		lifetime += timer.wait_time
+		if lifetime > max_lifetime:
+			projectile.queue_free()
+			return
+
+		# Despawn if too far from spawn point (safety net)
+		if projectile.global_position.distance_to(spawn_position) > max_despawn_range:
+			projectile.queue_free()
+			return
+
+		# If target is gone, despawn
+		var target = target_ref.get_ref()
+		if not target:
+			projectile.queue_free()
+			return
+
+		var dist_to_target = projectile.global_position.distance_to(target.global_position)
+
+		# Hit check
+		if dist_to_target < hit_radius:
+			if target.has_method("take_damage"):
+				target.take_damage(enemy_damage)
+			damage_dealt = true
+			projectile.queue_free()
+			return
+
+		# Move toward locked target
+		var move_dir = (target.global_position - projectile.global_position).normalized()
+		projectile.global_position += move_dir * proj_speed * timer.wait_time
+	)
+
+	timer.start()
+
+func _create_projectile_trail() -> GPUParticles2D:
+	var particles = GPUParticles2D.new()
+	particles.amount = 8
+	particles.lifetime = 0.3
+	particles.one_shot = false
+	particles.emitting = true
+
+	var material = ParticleProcessMaterial.new()
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = 2.0
+	material.spread = 180.0
+	material.initial_velocity_min = 5.0
+	material.initial_velocity_max = 10.0
+	material.gravity = Vector3.ZERO
+	material.scale_min = 2.0
+	material.scale_max = 3.0
+
+	var gradient = GradientTexture1D.new()
+	var grad = Gradient.new()
+	var trail_color = original_modulate if original_modulate != Color.WHITE else Color.RED
+	grad.set_color(0, Color(trail_color.r, trail_color.g, trail_color.b, 0.8))
+	grad.set_color(1, Color(trail_color.r, trail_color.g, trail_color.b, 0.0))
+	gradient.gradient = grad
+	material.color_ramp = gradient
+	material.color = trail_color
+
+	particles.process_material = material
+	return particles
+
 func attack_player():
 	if player and player.has_method("take_damage"):
 		var direction = (player.global_position - global_position).normalized()
-		var slash = _create_slash_particles(direction)
-		add_child(slash)
-		get_tree().create_timer(0.5).timeout.connect(func():
-			if is_instance_valid(slash):
-				slash.queue_free()
-		)
-		player.take_damage(damage)
+
+		# Ranged attack (attack_range > 100)
+		if attack_range > 100:
+			_shoot_projectile(direction)
+		else:
+			# Melee attack
+			var slash = _create_slash_particles(direction)
+			add_child(slash)
+			var slash_ref = weakref(slash)
+			get_tree().create_timer(0.5).timeout.connect(func():
+				var s = slash_ref.get_ref()
+				if s:
+					s.queue_free()
+			)
+			player.take_damage(damage)
 
 func take_damage(amount, attacker: Node = null):
 	if is_invincible:
@@ -164,7 +374,7 @@ func take_damage(amount, attacker: Node = null):
 	health -= amount
 	update_health_bar()
 
-	if player and current_state != State.PURSUING:
+	if player and current_state != State.PURSUING and current_state != State.CASTING:
 		current_state = State.PURSUING
 		time_in_pursuit = 0.0
 
@@ -194,13 +404,22 @@ func _blink_effect():
 		await get_tree().create_timer(iframe_duration / 6.0).timeout
 
 func _restore_visual_color() -> void:
-	match current_visual_state:
-		"normal":
-			$Sprite2D.modulate = Color.RED
-		"slowed":
-			$Sprite2D.modulate = Color(0.6, 0.85, 1.0)
-		"frozen":
-			$Sprite2D.modulate = Color(0.4, 0.8, 1.0)
+	if has_direction_sprites:
+		match current_visual_state:
+			"normal":
+				$Sprite2D.modulate = Color.WHITE
+			"slowed":
+				$Sprite2D.modulate = Color(0.7, 0.85, 1.0)
+			"frozen":
+				$Sprite2D.modulate = Color(0.5, 0.8, 1.0)
+	else:
+		match current_visual_state:
+			"normal":
+				$Sprite2D.modulate = original_modulate
+			"slowed":
+				$Sprite2D.modulate = Color(0.6, 0.85, 1.0)
+			"frozen":
+				$Sprite2D.modulate = Color(0.4, 0.8, 1.0)
 
 func die():
 	if last_attacker and last_attacker.is_in_group("player"):
@@ -245,6 +464,8 @@ func _recalculate_speed() -> void:
 
 	total_slow = clamp(total_slow, 0.0, 100.0)
 	speed = base_speed * (1.0 - total_slow / 100.0)
+	# Slow also increases attack cooldown (50% slow = 1.5x cooldown)
+	attack_cooldown = enemy_stats.attack_cooldown * (1.0 + total_slow / 100.0) if enemy_stats else 1.0 * (1.0 + total_slow / 100.0)
 	is_frozen = total_slow >= 100.0
 	_update_visual_state(total_slow)
 
@@ -269,17 +490,30 @@ func _update_visual_state(total_slow: float) -> void:
 		freeze_effect_node.queue_free()
 		freeze_effect_node = null
 
-	match current_visual_state:
-		"normal":
-			$Sprite2D.modulate = Color.RED
-		"slowed":
-			$Sprite2D.modulate = Color(0.6, 0.85, 1.0)
-			slow_effect_node = _create_slow_particles()
-			add_child(slow_effect_node)
-		"frozen":
-			$Sprite2D.modulate = Color(0.4, 0.8, 1.0)
-			freeze_effect_node = _create_freeze_particles()
-			add_child(freeze_effect_node)
+	if has_direction_sprites:
+		match current_visual_state:
+			"normal":
+				$Sprite2D.modulate = Color.WHITE
+			"slowed":
+				$Sprite2D.modulate = Color(0.7, 0.85, 1.0)
+				slow_effect_node = _create_slow_particles()
+				add_child(slow_effect_node)
+			"frozen":
+				$Sprite2D.modulate = Color(0.5, 0.8, 1.0)
+				freeze_effect_node = _create_freeze_particles()
+				add_child(freeze_effect_node)
+	else:
+		match current_visual_state:
+			"normal":
+				$Sprite2D.modulate = original_modulate
+			"slowed":
+				$Sprite2D.modulate = Color(0.6, 0.85, 1.0)
+				slow_effect_node = _create_slow_particles()
+				add_child(slow_effect_node)
+			"frozen":
+				$Sprite2D.modulate = Color(0.4, 0.8, 1.0)
+				freeze_effect_node = _create_freeze_particles()
+				add_child(freeze_effect_node)
 
 func _create_slow_particles() -> GPUParticles2D:
 	var particles = GPUParticles2D.new()
@@ -371,6 +605,21 @@ func _create_slash_particles(direction: Vector2) -> GPUParticles2D:
 	particles.process_material = material
 	return particles
 
+# NEW: Skill usage method
+func use_skill():
+	if not leader_skill or not leader_skill.skill_script:
+		return
+
+	var target_player = get_tree().get_first_node_in_group("player")
+	if not target_player:
+		return
+
+	var distance = global_position.distance_to(target_player.global_position)
+	if distance <= leader_skill.range:
+		print("Enemy using skill: ", leader_skill.skill_name, " at distance: ", distance)
+		leader_skill.skill_script.execute(self, leader_skill)
+		skill_timer = leader_skill.cooldown
+
 func apply_burn(source_id: String, damage: int, duration: float, attacker: Node) -> void:
 	if burn_sources.has(source_id):
 		burn_sources[source_id]["duration"] = duration
@@ -410,6 +659,6 @@ func _process_burn_timers(delta: float) -> void:
 	if burn_sources.size() > 0 and current_visual_state != "frozen":
 		$Sprite2D.modulate = Color(1.0, 0.5, 0.0)
 	elif burn_sources.size() == 0 and current_visual_state == "normal":
-		$Sprite2D.modulate = Color.RED
+		$Sprite2D.modulate = original_modulate
 
 	

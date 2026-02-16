@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ctm7j8xk2hqpa"]
 
-[ext_resource type="Script" path="res://enemy/enemy_camp.gd" id="1_camp"]
+[ext_resource type="Script" uid="uid://bdxasf57yocai" path="res://enemy/enemy_camp.gd" id="1_camp"]
 
-[node name="EnemyCamp" type="Node2D"]
+[node name="EnemyCamp" type="Node2D" unique_id=471174319]
 script = ExtResource("1_camp")

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://c6k6earldpe4l"]
+
+[ext_resource type="Script" uid="uid://cqwsnfrstoffx" path="res://enemy/resources/enemy_stats.gd" id="1_52k0w"]
+[ext_resource type="Texture2D" uid="uid://o6ikfmkftyu" path="res://assets/characters/enemies/ranged_minion/east.png" id="dir_e"]
+[ext_resource type="Texture2D" uid="uid://dw7xxj5lypwji" path="res://assets/characters/enemies/ranged_minion/north.png" id="dir_n"]
+[ext_resource type="Texture2D" uid="uid://c2o0a7ke10ua3" path="res://assets/characters/enemies/ranged_minion/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" uid="uid://cb8mw4t8fh4q4" path="res://assets/characters/enemies/ranged_minion/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" uid="uid://cdpuxxiykix82" path="res://assets/characters/enemies/ranged_minion/south.png" id="dir_s"]
+[ext_resource type="Texture2D" uid="uid://cor5p7ft2kimb" path="res://assets/characters/enemies/ranged_minion/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" uid="uid://dtnqmxl8a378d" path="res://assets/characters/enemies/ranged_minion/south-west.png" id="dir_sw"]
+[ext_resource type="Texture2D" uid="uid://bl2h335vpcwgu" path="res://assets/characters/enemies/ranged_minion/west.png" id="dir_w"]
+
+[resource]
+script = ExtResource("1_52k0w")
+max_health = 50
+damage = 6
+attack_range = 200.0
+attack_cooldown = 1.8
+xp_value = 18
+sprite_scale = 0.9
+color_tint = Color(0.47325182, 0.65813214, 0.3136716, 1)
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])
+metadata/_custom_type_script = "uid://cqwsnfrstoffx"

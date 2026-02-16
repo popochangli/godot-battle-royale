@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CampConfig" format=3 uid="uid://bed3y2mpw0u0"]
+
+[ext_resource type="Script" uid="uid://ctls3mq27skmi" path="res://enemy/resources/camp_config.gd" id="1_mw6wa"]
+[ext_resource type="Resource" uid="uid://b5hco0d8jq87e" path="res://enemy/skills/data/poison_arrow_skill.tres" id="1_ranyb"]
+[ext_resource type="Resource" uid="uid://35db8kmk3pxd" path="res://enemy/stats/ranged_leader_stats.tres" id="2_jwm8o"]
+[ext_resource type="Resource" uid="uid://c6k6earldpe4l" path="res://enemy/stats/ranged_minion_stats.tres" id="3_0t4tc"]
+
+[resource]
+script = ExtResource("1_mw6wa")
+camp_name = "Ranged Camp"
+leader_skill = ExtResource("1_ranyb")
+leader_stats = ExtResource("2_jwm8o")
+minion_stats = ExtResource("3_0t4tc")
+camp_color = Color(0.30237547, 0.6118863, 0.3966027, 1)
+metadata/_custom_type_script = "uid://ctls3mq27skmi"
