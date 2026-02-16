@@ -29,7 +29,7 @@ camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResourc
 
 [node name="EnemyCamp2" parent="." unique_id=1540821432 instance=ExtResource("3_1bvp3")]
 position = Vector2(-154, 91)
-camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("7_ycdy4")])
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("7_ycdy4"), ExtResource("8_w48qg"), ExtResource("6_dg77c")])
 
 [node name="EnemyCamp3" parent="." unique_id=1480454598 instance=ExtResource("3_1bvp3")]
 position = Vector2(2308, 1475)
