@@ -26,6 +26,10 @@ var current_visual_state: String = "normal"
 var slow_effect_node: GPUParticles2D = null
 var freeze_effect_node: GPUParticles2D = null
 
+var burn_sources: Dictionary = {}
+var burn_tick_timer: float = 0.0
+
+
 var current_state: State = State.IDLE
 var camp: Node2D = null
 var camp_center: Vector2 = Vector2.ZERO
@@ -55,6 +59,7 @@ func _physics_process(delta):
 		attack_timer -= delta
 
 	_process_slow_timers(delta)
+	_process_burn_timers(delta)
 
 	if player == null:
 		player = get_tree().get_first_node_in_group("player")
@@ -365,3 +370,46 @@ func _create_slash_particles(direction: Vector2) -> GPUParticles2D:
 
 	particles.process_material = material
 	return particles
+
+func apply_burn(source_id: String, damage: int, duration: float, attacker: Node) -> void:
+	if burn_sources.has(source_id):
+		burn_sources[source_id]["duration"] = duration
+		burn_sources[source_id]["damage"] = damage
+		burn_sources[source_id]["attacker"] = attacker
+	else:
+		burn_sources[source_id] = {
+			"damage": damage,
+			"duration": duration,
+			"attacker": attacker
+		}
+	_update_visual_state(0.0)
+
+func _process_burn_timers(delta: float) -> void:
+	# 1. Handle Duration
+	var sources_to_remove = []
+	for source_id in burn_sources:
+		burn_sources[source_id]["duration"] -= delta
+		if burn_sources[source_id]["duration"] <= 0:
+			sources_to_remove.append(source_id)
+			
+	for source_id in sources_to_remove:
+		burn_sources.erase(source_id)
+		
+	burn_tick_timer -= delta
+	if burn_tick_timer <= 0:
+		burn_tick_timer = 0.5
+		var total_damage = 0
+		var main_attacker = null
+		for source_id in burn_sources:
+			total_damage += burn_sources[source_id]["damage"]
+			main_attacker = burn_sources[source_id]["attacker"]
+			
+		if total_damage > 0:
+			take_damage(total_damage, main_attacker)
+
+	if burn_sources.size() > 0 and current_visual_state != "frozen":
+		$Sprite2D.modulate = Color(1.0, 0.5, 0.0)
+	elif burn_sources.size() == 0 and current_visual_state == "normal":
+		$Sprite2D.modulate = Color.RED
+
+	
