@@ -5,7 +5,8 @@
 
 [resource]
 script = ExtResource("1_omae4")
-cooldown = 5.0
+cooldown = 10.0
 indicator_color = Color(1.5979409e-05, 0.44448027, 0.7991649, 1)
 ability_script = ExtResource("1_oax3u")
+range_distance = 500.0
 metadata/_custom_type_script = "uid://cuyhc4ww30jbe"
