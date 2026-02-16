@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://o8uyfevcgn3l"]
+
+[ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_h0dql"]
+[ext_resource type="Script" uid="uid://ddhul34n3i872" path="res://player/abilities/scripts/spectral_dagger.gd" id="1_jwuvl"]
+
+[resource]
+script = ExtResource("1_h0dql")
+damage = 40
+indicator_color = Color(0.67698354, 0.0003808105, 0.6860194, 1)
+ability_script = ExtResource("1_jwuvl")
+radius = 120.0
+range_distance = 100.0
+metadata/_custom_type_script = "uid://cuyhc4ww30jbe"
