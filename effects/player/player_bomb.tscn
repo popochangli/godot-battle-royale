@@ -1,8 +1,9 @@
-[gd_scene format=3 uid="uid://cpbomb0000001"]
+[gd_scene load_steps=2 format=3 uid="uid://cpbomb0000001"]
 
-[ext_resource type="Script" uid="uid://c1mgj8dyqchyo" path="res://effects/player/player_bomb.gd" id="1_script"]
+[ext_resource type="Script" path="res://effects/player/player_bomb.gd" id="1_script"]
 
-[node name="PlayerBomb" type="Area2D" unique_id=225679051]
+[node name="PlayerBomb" type="Area2D"]
 script = ExtResource("1_script")
 speed = 400.0
 max_lifetime = 5.0
+damage = 20
