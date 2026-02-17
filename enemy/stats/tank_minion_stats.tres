@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://boejij3vrosbb"]
+
+[ext_resource type="Script" uid="uid://cqwsnfrstoffx" path="res://enemy/resources/enemy_stats.gd" id="1_ewogj"]
+[ext_resource type="Texture2D" uid="uid://dsq63faaxu1vp" path="res://assets/characters/enemies/tank_minion/east.png" id="dir_e"]
+[ext_resource type="Texture2D" uid="uid://b0rrevqmymbkd" path="res://assets/characters/enemies/tank_minion/north.png" id="dir_n"]
+[ext_resource type="Texture2D" uid="uid://3mftt534l43i" path="res://assets/characters/enemies/tank_minion/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" uid="uid://bjfejy0y2ewmo" path="res://assets/characters/enemies/tank_minion/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" uid="uid://opdf18r5e474" path="res://assets/characters/enemies/tank_minion/south.png" id="dir_s"]
+[ext_resource type="Texture2D" uid="uid://c302n8w0oyv0q" path="res://assets/characters/enemies/tank_minion/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" uid="uid://cvw38od6ylt2f" path="res://assets/characters/enemies/tank_minion/south-west.png" id="dir_sw"]
+[ext_resource type="Texture2D" uid="uid://emsef4be7nyf" path="res://assets/characters/enemies/tank_minion/west.png" id="dir_w"]
+
+[resource]
+script = ExtResource("1_ewogj")
+max_health = 80
+speed = 250.0
+damage = 8
+xp_value = 20
+color_tint = Color(0.63744885, 0.6188605, 0.5953011, 1)
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])
+metadata/_custom_type_script = "uid://cqwsnfrstoffx"

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://cxf3c02imkqja"]
+
+[ext_resource type="Script" uid="uid://cqwsnfrstoffx" path="res://enemy/resources/enemy_stats.gd" id="1_6vihr"]
+[ext_resource type="Texture2D" uid="uid://blbd86aerdjvh" path="res://assets/characters/enemies/mage_leader/east.png" id="dir_e"]
+[ext_resource type="Texture2D" uid="uid://bxxs04radeas0" path="res://assets/characters/enemies/mage_leader/north.png" id="dir_n"]
+[ext_resource type="Texture2D" uid="uid://b76iu2wr5sfjg" path="res://assets/characters/enemies/mage_leader/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" uid="uid://q5t23wbljicc" path="res://assets/characters/enemies/mage_leader/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" uid="uid://dr81jwi624jir" path="res://assets/characters/enemies/mage_leader/south.png" id="dir_s"]
+[ext_resource type="Texture2D" uid="uid://bni1us42uolof" path="res://assets/characters/enemies/mage_leader/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" uid="uid://ba7gkanc2rdd8" path="res://assets/characters/enemies/mage_leader/south-west.png" id="dir_sw"]
+[ext_resource type="Texture2D" uid="uid://c1ht7y00atm2o" path="res://assets/characters/enemies/mage_leader/west.png" id="dir_w"]
+
+[resource]
+script = ExtResource("1_6vihr")
+max_health = 70
+speed = 120.0
+damage = 5
+attack_range = 200.0
+attack_cooldown = 2.5
+xp_value = 50
+sprite_scale = 1.2
+color_tint = Color(0.31271896, 0.03200695, 0.3142958, 1)
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])
+metadata/_custom_type_script = "uid://cqwsnfrstoffx"

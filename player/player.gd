@@ -9,9 +9,8 @@ var aim_direction: Vector2 = Vector2.RIGHT
 
 var primary_timer: float = 0.0
 var secondary_timer: float = 0.0
+var regen_timer: float = 0.0
 
-var is_invincible: bool = false
-var iframe_duration: float = 0.5
 
 @onready var health_bar = $CooldownUI/HealthBar
 @onready var primary_indicator = $CooldownUI/HBoxContainer/PrimaryContainer/PrimaryIndicator
@@ -100,6 +99,15 @@ func _physics_process(delta):
 	if secondary_timer > 0:
 		secondary_timer -= delta
 
+	# Health regen: 0.5 HP/s per level
+	regen_timer += delta
+	if regen_timer >= 1.0:
+		regen_timer -= 1.0
+		var regen_amount = GameState.current_level * 0.5
+		if health < max_health and regen_amount >= 1.0:
+			health = min(health + int(regen_amount), max_health)
+			update_health_bar()
+
 	if primary_indicator:
 		primary_indicator.cooldown_current = primary_timer
 	if secondary_indicator:
@@ -149,16 +157,12 @@ func use_secondary_ability():
 		secondary_timer = GameState.get_scaled_cooldown(ability.cooldown, ability.cooldown_scale_percent)
 
 func take_damage(amount):
-	if is_invincible:
-		return
-
-	health -= amount
+	var reduced = int(amount * (1.0 - GameState.get_damage_reduction()))
+	health -= max(reduced, 1)
 	update_health_bar()
 
 	if health <= 0:
 		die()
-	else:
-		_start_iframes()
 
 func take_zone_damage(amount: float):
 	health -= int(amount)
@@ -168,25 +172,6 @@ func take_zone_damage(amount: float):
 	if health <= 0:
 		die()
 
-func _start_iframes():
-	is_invincible = true
-	_blink_effect()
-	await get_tree().create_timer(iframe_duration).timeout
-	if not is_instance_valid(self):
-		return
-	is_invincible = false
-	$Sprite2D.modulate.a = 1.0
-
-func _blink_effect():
-	for i in range(5):
-		if not is_instance_valid(self):
-			return
-		$Sprite2D.modulate.a = 0.3
-		await get_tree().create_timer(iframe_duration / 10.0).timeout
-		if not is_instance_valid(self):
-			return
-		$Sprite2D.modulate.a = 1.0
-		await get_tree().create_timer(iframe_duration / 10.0).timeout
 
 func heal(amount):
 	health += amount

@@ -1,11 +1,9 @@
-[gd_resource type="Resource" script_class="RuneData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="RuneData" format=3 uid="uid://dor3nstnhhn4w"]
 
-[ext_resource type="Script" path="res://collectibles/rune/rune_data.gd" id="1_rune_data"]
+[ext_resource type="Script" uid="uid://cu7e7q2oxabgl" path="res://collectibles/rune/rune_data.gd" id="1_rune_data"]
 
 [resource]
 script = ExtResource("1_rune_data")
 rune_id = "health_rune"
 display_name = "Health Rune"
-effect_type = "heal"
-effect_value = 0.1
 glow_color = Color(0.2, 1, 0.3, 1)

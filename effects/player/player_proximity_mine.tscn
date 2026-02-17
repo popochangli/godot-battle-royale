@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpproxmine001"]
+
+[ext_resource type="Script" path="res://effects/player/player_proximity_mine.gd" id="1_script"]
+
+[node name="PlayerProximityMine" type="Area2D"]
+script = ExtResource("1_script")
+damage = 20
+mine_radius = 50.0

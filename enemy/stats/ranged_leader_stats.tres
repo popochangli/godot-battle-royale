@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://35db8kmk3pxd"]
+
+[ext_resource type="Script" uid="uid://cqwsnfrstoffx" path="res://enemy/resources/enemy_stats.gd" id="1_hykeb"]
+[ext_resource type="Texture2D" uid="uid://cdguxbx20xv50" path="res://assets/characters/enemies/ranged_leader/east.png" id="dir_e"]
+[ext_resource type="Texture2D" uid="uid://buem6di8ejl6j" path="res://assets/characters/enemies/ranged_leader/north.png" id="dir_n"]
+[ext_resource type="Texture2D" uid="uid://bkykw4uw27avs" path="res://assets/characters/enemies/ranged_leader/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" uid="uid://b0ayfax0kvkl5" path="res://assets/characters/enemies/ranged_leader/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" uid="uid://b5m2mlc1usule" path="res://assets/characters/enemies/ranged_leader/south.png" id="dir_s"]
+[ext_resource type="Texture2D" uid="uid://qp57lrpgb7x4" path="res://assets/characters/enemies/ranged_leader/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" uid="uid://cnn6w1j7sovct" path="res://assets/characters/enemies/ranged_leader/south-west.png" id="dir_sw"]
+[ext_resource type="Texture2D" uid="uid://g2k5t1ertlc4" path="res://assets/characters/enemies/ranged_leader/west.png" id="dir_w"]
+
+[resource]
+script = ExtResource("1_hykeb")
+max_health = 80
+speed = 140.0
+damage = 12
+attack_range = 220.0
+attack_cooldown = 1.8
+xp_value = 50
+sprite_scale = 1.1
+color_tint = Color(1.92523e-06, 0.56517994, 0.17406839, 1)
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])
+metadata/_custom_type_script = "uid://cqwsnfrstoffx"

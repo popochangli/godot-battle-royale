@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://cefireball001"]
+
+[ext_resource type="Script" path="res://effects/enemy/enemy_fireball.gd" id="1_script"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 10.0
+
+[node name="EnemyFireball" type="Area2D"]
+script = ExtResource("1_script")
+speed = 300.0
+max_range = 800.0
+max_lifetime = 3.0
+damage = 20
+hit_radius = 30.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")

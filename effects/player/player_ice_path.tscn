@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpicepath0001"]
+
+[ext_resource type="Script" path="res://effects/player/player_ice_path.gd" id="1_script"]
+
+[node name="PlayerIcePath" type="Area2D"]
+script = ExtResource("1_script")
+path_duration = 2.5
