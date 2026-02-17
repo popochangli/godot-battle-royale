@@ -193,15 +193,12 @@ func use_primary_ability():
 		var ability = character_data.primary_ability
 		var mouse_pos = get_global_mouse_position()
 		primary_timer = GameState.get_scaled_cooldown(ability.cooldown, ability.cooldown_scale_percent, peer_id)
-		# สร้าง effect ทันทีบนเครื่องตัวเอง (client-side prediction)
 		if ability.ability_script:
 			ability.ability_script.execute(self, ability, mouse_pos)
 		if multiplayer.multiplayer_peer != null:
 			if multiplayer.is_server():
-				# Host: broadcast visual ไปทุก client
 				_show_ability_visual.rpc("primary", global_position, aim_direction, mouse_pos)
 			else:
-				# Client: ส่งไป server เพื่อ damage + broadcast ไป peers อื่น
 				_request_ability.rpc_id(1, "primary", aim_direction, mouse_pos)
 
 func use_secondary_ability():
@@ -223,11 +220,9 @@ func use_secondary_ability():
 func _request_ability(_type: String, _direction: Vector2, _mouse_pos: Vector2):
 	if not multiplayer.is_server():
 		return
-	# Server execute สำหรับ damage
 	var ability = character_data.primary_ability if _type == "primary" else (character_data.secondary_ability if character_data else null)
 	if ability and ability.ability_script:
 		ability.ability_script.execute(self, ability, _mouse_pos)
-	# Broadcast visual ไป peers อื่น (ไม่รวมคนยิง เพราะเขาสร้างเองแล้ว)
 	var sender = multiplayer.get_remote_sender_id()
 	for pid in multiplayer.get_peers():
 		if pid != sender:
@@ -235,7 +230,6 @@ func _request_ability(_type: String, _direction: Vector2, _mouse_pos: Vector2):
 
 @rpc("any_peer", "reliable")
 func _show_ability_visual(_type: String, _pos: Vector2, _direction: Vector2, _mouse_pos: Vector2):
-	# สร้าง visual effect บนเครื่องที่รับ (ไม่มี damage เพราะไม่ใช่ server)
 	var ability = character_data.primary_ability if _type == "primary" else (character_data.secondary_ability if character_data else null)
 	if ability and ability.ability_script:
 		var old_pos = global_position
@@ -274,7 +268,6 @@ func take_damage(amount, _attacker = null):
 	health -= reduced
 	update_health_bar()
 
-	# เมื่อโดนยิงจาก host ต้อง RPC ไปให้ client apply damage ด้วย เพราะ client เป็น authority จะ override ค่า health
 	if multiplayer.multiplayer_peer != null:
 		var authority = get_multiplayer_authority()
 		if authority != 1:  # ไม่ใช่ server = เป็น player ของ client
@@ -285,7 +278,6 @@ func take_damage(amount, _attacker = null):
 
 @rpc("any_peer", "reliable")
 func _apply_damage(amount: int):
-	# รับได้เฉพาะจาก server เท่านั้น (ป้องกัน cheat)
 	if multiplayer.get_remote_sender_id() != 1:
 		return
 	health = max(0, health - amount)
@@ -335,7 +327,6 @@ func die():
 					main_node._announce_winner(alive[0].peer_id)
 	else:
 		_set_dead_state()
-		# Single player: show death overlay
 		var main_node = get_tree().current_scene
 		if main_node and main_node.has_method("_display_death_overlay"):
 			main_node._display_death_overlay(1, 1)

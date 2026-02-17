@@ -45,7 +45,6 @@ func _sync_initial_state() -> void:
 			"character_name": my_name
 		}
 	else:
-		# เก็บ character_path ที่เลือกจาก character_select
 		NetworkManager.players_info[my_id]["ready"] = false
 		NetworkManager.players_info[my_id]["character_name"] = my_name
 	_broadcast_state()
@@ -81,8 +80,6 @@ func _on_player_connected(peer_id: int) -> void:
 			"ready": false,
 			"character_name": ""
 		}
-		# อัปเดต UI ฝั่ง server เท่านั้น — ไม่ broadcast เพราะ client ใหม่ยังโหลด Lobby ไม่เสร็จ
-		# client ใหม่จะเรียก _request_full_sync เองหลังโหลด Lobby เสร็จ ซึ่งจะ broadcast ให้ทุกคน
 		_refresh_player_display()
 
 func _on_player_disconnected(_peer_id: int) -> void:
@@ -120,7 +117,6 @@ func _update_start_button() -> void:
 	start_button.disabled = not all_ready
 
 func _update_ready_button() -> void:
-	# Hero เลือกแล้วจาก character_select
 	ready_button.disabled = false
 
 func _update_ui() -> void:
@@ -132,7 +128,7 @@ func _update_ui() -> void:
 func _on_start_pressed() -> void:
 	if multiplayer.is_server():
 		_start_game.rpc()
-		_start_game()  # Server ต้องเปลี่ยน scene ด้วย (RPC ไม่ execute บน caller)
+		_start_game()
 
 @rpc("authority", "reliable")
 func _start_game() -> void:
