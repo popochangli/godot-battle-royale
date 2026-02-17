@@ -23,7 +23,7 @@ const EFFECT_SCENES = [
 
 var _total_players: int = 0
 var _death_count: int = 0
-var _reported_deaths: Dictionary = {}  # peer_id -> true, ป้องกันนับซ้ำเมื่อ die() ถูกเรียกซ้ำ
+var _reported_deaths: Dictionary = {}  # peer_id -> true
 @onready var effect_spawner = $EffectsContainer/EffectSpawner
 @onready var rpc_effects_container = $RPCEffectsContainer
 @onready var enemy_spawner = $EnemiesContainer/EnemySpawner
@@ -32,9 +32,6 @@ var _reported_deaths: Dictionary = {}  # peer_id -> true, ป้องกัน�
 func _ready():
 	collectible_spawner.add_spawnable_scene("res://collectibles/rune/rune.tscn")
 	collectible_spawner.add_spawnable_scene("res://collectibles/ore/ore.tscn")
-
-	# ไม่ลงทะเบียน scene กับ EffectSpawner เพื่อป้องกัน auto-replicate/despawn conflict
-	# ใช้ RPC (spawn_effect_sync) แทนสำหรับ sync effects ไป clients
 
 	if multiplayer.multiplayer_peer != null:
 		player_spawner.spawn_function = _spawn_player
@@ -69,7 +66,7 @@ func _on_player_died(dead_peer_id: int) -> void:
 	if not multiplayer.is_server():
 		return
 	if _reported_deaths.get(dead_peer_id, false):
-		return  # นับเฉพาะครั้งแรก ป้องกัน die() ถูกเรียกซ้ำจาก poison/zone/etc
+		return
 	_reported_deaths[dead_peer_id] = true
 	_death_count += 1
 	var rank = _total_players - _death_count + 1
@@ -111,7 +108,7 @@ func _check_win_condition() -> void:
 	if alive.size() == 1:
 		_announce_winner(alive[0].get_multiplayer_authority())
 
-const MIN_SPAWN_DISTANCE: float = 60.0  # ระยะห่างขั้นต่ำระหว่างจุดเกิด (ป้องกันตัวซ้อนกัน)
+const MIN_SPAWN_DISTANCE: float = 60.0
 
 func _get_map_rect() -> Rect2:
 	var zm = get_node_or_null("ZoneManager")
@@ -120,7 +117,6 @@ func _get_map_rect() -> Rect2:
 	return Rect2(-1000, -1000, 4000, 4000)
 
 func _resolve_spawn_overlaps(peer_ids: Array, positions: Dictionary) -> Dictionary:
-	## เลื่อนจุดเกิดที่ใกล้กันให้ห่างออกไปอัตโนมัติ
 	var map_rect = _get_map_rect()
 	var margin = 32.0
 	var valid_rect = Rect2(map_rect.position + Vector2(margin, margin), map_rect.size - Vector2(margin * 2, margin * 2))
@@ -252,8 +248,6 @@ func _create_effect_from_data(data: Dictionary) -> Node:
 			effect.set(p, val)
 	return effect
 
-## สร้าง effect บน server และ sync ไป clients ผ่าน RPC
-## ใช้ RPCEffectsContainer (ไม่ใช่ EffectsContainer) เพื่อไม่ให้ EffectSpawner track และส่ง despawn ที่ client ไม่มี
 func spawn_effect_sync(effect_data: Dictionary) -> Node:
 	var effect = _create_effect_from_data(effect_data)
 	if effect is Node and effect.get_parent() == null:

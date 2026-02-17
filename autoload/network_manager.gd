@@ -5,7 +5,6 @@ signal player_disconnected(peer_id: int)
 signal connection_succeeded()
 signal connection_failed()
 signal game_over(winner_peer_id: int)
-## ปล่อยเมื่อ lobby state ถูก sync จาก server (ใช้ refresh UI)
 signal lobby_state_synced()
 
 const PORT = 9999
@@ -73,7 +72,6 @@ func reset() -> void:
 	pending_join_ip = ""
 	GameState.reset_all()
 
-## RPCs อยู่บน autoload เพื่อให้ทำงานข้าม scene ได้ (CharacterSelect <-> Lobby)
 
 @rpc("any_peer", "reliable")
 func submit_player_name_rpc(peer_id: int, name_text: String) -> void:
@@ -120,4 +118,4 @@ func _broadcast_lobby_state() -> void:
 		readys.append(info["ready"])
 		names.append(info["character_name"])
 	sync_lobby_state_rpc.rpc(peer_ids, character_paths, readys, names)
-	lobby_state_synced.emit()  # Server refresh UI (client ได้จาก sync_lobby_state_rpc)
+	lobby_state_synced.emit()  # Server refresh UI

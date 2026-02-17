@@ -4,7 +4,7 @@ var selected_position: Vector2 = Vector2.ZERO
 var has_selected: bool = false
 var spawn_confirmed: bool = false
 var map_rect: Rect2
-const MAP_EDGE_MARGIN: float = 48.0  # ระยะห่างจากขอบแผนที่ (ป้องกันเกิดนอกพื้นที่เดินได้)
+const MAP_EDGE_MARGIN: float = 48.0
 
 @onready var subviewport_container = $SubViewportContainer
 @onready var subviewport = $SubViewportContainer/SubViewport
@@ -72,7 +72,6 @@ func _on_start_pressed():
 		_load_game.rpc()
 
 func _get_valid_spawn_rect() -> Rect2:
-	## พื้นที่ที่กดได้ (ภายในแผนที่ห่างจากขอบ MAP_EDGE_MARGIN)
 	var margin = Vector2(MAP_EDGE_MARGIN, MAP_EDGE_MARGIN)
 	var size = map_rect.size - margin * 2
 	size.x = max(32.0, size.x)
@@ -99,7 +98,6 @@ func _on_sub_viewport_container_gui_input(event: InputEvent):
 
 		var valid_rect = _get_valid_spawn_rect()
 		if not valid_rect.has_point(selected_position):
-			# กดนอกแผนที่ - ไม่รับ
 			return
 
 		selected_position.x = clamp(selected_position.x, valid_rect.position.x, valid_rect.end.x)

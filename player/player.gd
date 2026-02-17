@@ -270,7 +270,7 @@ func take_damage(amount, _attacker = null):
 
 	if multiplayer.multiplayer_peer != null:
 		var authority = get_multiplayer_authority()
-		if authority != 1:  # ไม่ใช่ server = เป็น player ของ client
+		if authority != 1:
 			_apply_damage.rpc_id(authority, reduced)
 
 	if health <= 0:

@@ -100,7 +100,6 @@ func _setup_multiplayer() -> void:
 	NetworkManager.player_disconnected.connect(_on_player_disconnected)
 	if multiplayer.is_server():
 		_sync_initial_state()
-		# เติม peers ที่เชื่อมต่อก่อนโหลด scene
 		for pid in multiplayer.get_peers():
 			if not NetworkManager.players_info.has(pid):
 				NetworkManager.players_info[pid] = {
