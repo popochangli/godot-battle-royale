@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1913966929]
+[node name="Background" type="ColorRect" parent="." unique_id=1913966929]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,23 +20,116 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.1, 0.15, 1)
 
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1927543558]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1667093637]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=618950505]
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer" unique_id=1740687295]
 layout_mode = 2
-theme_override_constants/separation = 30
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1313000247]
+[node name="Title" type="Label" parent="MarginContainer/MainVBox" unique_id=1993692774]
 layout_mode = 2
-text = "SELECT CHARACTER"
+text = "SELECT YOUR HERO"
 horizontal_alignment = 1
 
-[node name="ButtonContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=715089998]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/MainVBox" unique_id=1956842538]
 layout_mode = 2
-theme_override_constants/separation = 10
+
+[node name="ContentHBox" type="HBoxContainer" parent="MarginContainer/MainVBox" unique_id=1736267133]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox" unique_id=1952450507]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CarouselRow" type="HBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox" unique_id=1691518811]
+layout_mode = 2
+alignment = 1
+
+[node name="BtnPrev" type="Button" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox/CarouselRow" unique_id=1764653250]
+layout_mode = 2
+text = "<"
+
+[node name="CharacterDisplay" type="TextureRect" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox/CarouselRow" unique_id=1396031667]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BtnNext" type="Button" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox/CarouselRow" unique_id=26361110]
+layout_mode = 2
+text = ">
+"
+
+[node name="NameLabel" type="Label" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox" unique_id=2017477233]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox" unique_id=1028894326]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/MainVBox/ContentHBox" unique_id=384014618]
+layout_mode = 2
+
+[node name="RightVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox" unique_id=90849885]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BioTitle" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox" unique_id=186050359]
+layout_mode = 2
+text = "BIOGRAPHY"
+
+[node name="DescLabel" type="RichTextLabel" parent="MarginContainer/MainVBox/ContentHBox/RightVBox" unique_id=687704173]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+fit_content = true
+
+[node name="AbilitiesTitle" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox" unique_id=2082042157]
+layout_mode = 2
+text = "ABILITIES"
+
+[node name="AbilitiesHBox" type="HBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/RightVBox" unique_id=1379969203]
+layout_mode = 2
+
+[node name="Ability1" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox" unique_id=907519591]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability1" unique_id=1010960870]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="Name" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability1" unique_id=1217289117]
+layout_mode = 2
+
+[node name="Desc" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability1" unique_id=1637784894]
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="Ability2" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox" unique_id=563281098]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability2" unique_id=201937882]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="Name" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability2" unique_id=1785740418]
+layout_mode = 2
+
+[node name="Desc" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability2" unique_id=2053492825]
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="PlayButton" type="Button" parent="MarginContainer/MainVBox" unique_id=227071452]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+text = "PLAY"
