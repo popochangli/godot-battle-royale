@@ -313,32 +313,31 @@ func heal(amount):
 		health = max_health
 	update_health_bar()
 
+func _set_dead_state():
+	visible = false
+	set_physics_process(false)
+	collision_layer = 0
+	collision_mask = 0
+
 func die():
 	if multiplayer.multiplayer_peer != null:
 		if not multiplayer.is_server():
 			return
 		_broadcast_death.rpc()
+		_set_dead_state()
 		var main_node = get_tree().current_scene
 		if main_node and main_node.has_method("_announce_winner"):
 			var alive = get_tree().get_nodes_in_group("player").filter(func(p): return p.health > 0 and not p.is_in_group("player_illusion"))
 			if alive.size() == 1:
 				main_node._announce_winner(alive[0].peer_id)
-	visible = false
-	set_physics_process(false)
-	await get_tree().create_timer(2.0).timeout
-	if is_instance_valid(self):
-		health = max_health
-		position = Vector2.ZERO
-		visible = true
-		set_physics_process(true)
-		update_health_bar()
+	else:
+		_set_dead_state()
 
 @rpc("any_peer", "reliable")
 func _broadcast_death():
 	if multiplayer.get_remote_sender_id() != 1:
 		return
-	visible = false
-	set_physics_process(false)
+	_set_dead_state()
 
 func update_health_bar():
 	if health_bar:
