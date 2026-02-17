@@ -2,6 +2,7 @@ extends Control
 
 var selected_position: Vector2 = Vector2.ZERO
 var has_selected: bool = false
+var spawn_confirmed: bool = false
 var map_rect: Rect2
 
 @onready var subviewport_container = $SubViewportContainer
@@ -70,6 +71,8 @@ func _on_start_pressed():
 		_load_game.rpc()
 
 func _on_sub_viewport_container_gui_input(event: InputEvent):
+	if spawn_confirmed:
+		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var local_pos = subviewport_container.get_local_mouse_position()
 		var container_size = subviewport_container.size
@@ -104,10 +107,12 @@ func _on_confirm_button_pressed():
 			_submit_spawn(my_id, selected_position)  # Host runs directly
 		else:
 			_submit_spawn.rpc_id(1, my_id, selected_position)
+		spawn_confirmed = true
 		confirm_button.disabled = true
 		if _status_label:
 			_status_label.text = "Waiting for other players..."
 	else:
+		spawn_confirmed = true
 		GameState.spawn_position = selected_position
 		var pd = GameState._ensure_player_data(1)
 		pd["spawn_position"] = selected_position

@@ -112,6 +112,8 @@ func _refresh_player_display() -> void:
 	for child in player_list.get_children():
 		child.queue_free()
 
+	_update_ready_button()
+
 	for peer_id in NetworkManager.players_info:
 		var info = NetworkManager.players_info[peer_id]
 		var label = Label.new()
@@ -186,8 +188,16 @@ func _update_start_button() -> void:
 			break
 	start_button.disabled = not all_ready
 
+func _update_ready_button() -> void:
+	var my_id = multiplayer.get_unique_id()
+	var has_character = false
+	if NetworkManager.players_info.has(my_id):
+		has_character = NetworkManager.players_info[my_id]["character_path"] != ""
+	ready_button.disabled = not has_character
+
 func _update_ui() -> void:
 	_update_start_button()
+	_update_ready_button()
 	if multiplayer.is_server():
 		_refresh_player_display()
 
