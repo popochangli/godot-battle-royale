@@ -26,7 +26,15 @@ func _ready():
 
 func _process(_delta):
 	if player == null:
-		player = get_tree().get_first_node_in_group("player")
+		if multiplayer.multiplayer_peer == null:
+			player = get_tree().get_first_node_in_group("player")
+		else:
+			for p in get_tree().get_nodes_in_group("player"):
+				if p.is_multiplayer_authority():
+					player = p
+					break
+			if player == null:
+				player = get_tree().get_first_node_in_group("player")
 	if zone_manager == null:
 		zone_manager = get_tree().get_first_node_in_group("zone_manager")
 		if zone_manager == null:

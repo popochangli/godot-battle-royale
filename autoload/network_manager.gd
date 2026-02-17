@@ -1,0 +1,123 @@
+extends Node
+
+signal player_connected(peer_id: int)
+signal player_disconnected(peer_id: int)
+signal connection_succeeded()
+signal connection_failed()
+signal game_over(winner_peer_id: int)
+## ปล่อยเมื่อ lobby state ถูก sync จาก server (ใช้ refresh UI)
+signal lobby_state_synced()
+
+const PORT = 9999
+const MAX_PLAYERS = 4
+
+## peer_id -> {character_path: String, spawn_pos: Vector2, ready: bool, character_name: String}
+var players_info: Dictionary = {}
+
+## Set before Host/Join, used by player_name_entry
+var my_player_name: String = ""
+var connection_mode: String = "host"
+var pending_join_ip: String = ""
+
+func _ready():
+	multiplayer.peer_connected.connect(_on_peer_connected)
+	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	multiplayer.connected_to_server.connect(_on_connection_succeeded)
+	multiplayer.connection_failed.connect(_on_connection_failed)
+
+func host_game() -> void:
+	var peer = ENetMultiplayerPeer.new()
+	var err = peer.create_server(PORT, MAX_PLAYERS)
+	if err != OK:
+		push_error("Failed to create server: " + str(err))
+		connection_failed.emit()
+		return
+	multiplayer.multiplayer_peer = peer
+	var my_id = multiplayer.get_unique_id()
+	players_info[my_id] = {"character_path": "", "spawn_pos": Vector2.ZERO, "ready": false, "character_name": ""}
+	connection_succeeded.emit()
+
+func join_game(address: String) -> void:
+	var peer = ENetMultiplayerPeer.new()
+	var err = peer.create_client(address, PORT)
+	if err != OK:
+		push_error("Failed to join game: " + str(err))
+		connection_failed.emit()
+		return
+	multiplayer.multiplayer_peer = peer
+
+func _on_peer_connected(peer_id: int) -> void:
+	player_connected.emit(peer_id)
+
+func _on_peer_disconnected(peer_id: int) -> void:
+	players_info.erase(peer_id)
+	player_disconnected.emit(peer_id)
+
+func _on_connection_succeeded() -> void:
+	connection_succeeded.emit()
+
+func _on_connection_failed() -> void:
+	multiplayer.multiplayer_peer = null
+	connection_failed.emit()
+
+func is_host() -> bool:
+	return multiplayer.is_server()
+
+func get_my_id() -> int:
+	return multiplayer.get_unique_id()
+
+func reset() -> void:
+	multiplayer.multiplayer_peer = null
+	players_info.clear()
+	my_player_name = ""
+	pending_join_ip = ""
+	GameState.reset_all()
+
+## RPCs อยู่บน autoload เพื่อให้ทำงานข้าม scene ได้ (CharacterSelect <-> Lobby)
+
+@rpc("any_peer", "reliable")
+func submit_player_name_rpc(peer_id: int, name_text: String) -> void:
+	if multiplayer.is_server() and players_info.has(peer_id):
+		players_info[peer_id]["character_name"] = name_text if name_text else "Player " + str(peer_id)
+		_broadcast_lobby_state()
+
+@rpc("any_peer", "reliable")
+func request_full_sync_rpc() -> void:
+	if multiplayer.is_server():
+		_broadcast_lobby_state()
+
+@rpc("any_peer", "reliable")
+func set_character_rpc(peer_id: int, path: String) -> void:
+	if multiplayer.is_server():
+		if players_info.has(peer_id):
+			players_info[peer_id]["character_path"] = path
+			_broadcast_lobby_state()
+
+@rpc("authority", "reliable")
+func sync_lobby_state_rpc(peer_ids: Array, character_paths: Array, readys: Array, names: Array) -> void:
+	players_info.clear()
+	for i in peer_ids.size():
+		var pid = peer_ids[i]
+		players_info[pid] = {
+			"character_path": character_paths[i] if i < character_paths.size() else "",
+			"spawn_pos": Vector2.ZERO,
+			"ready": readys[i] if i < readys.size() else false,
+			"character_name": names[i] if i < names.size() else ""
+		}
+	lobby_state_synced.emit()
+
+func _broadcast_lobby_state() -> void:
+	if not multiplayer.is_server():
+		return
+	var peer_ids: Array = []
+	var character_paths: Array = []
+	var readys: Array = []
+	var names: Array = []
+	for pid in players_info:
+		var info = players_info[pid]
+		peer_ids.append(pid)
+		character_paths.append(info["character_path"])
+		readys.append(info["ready"])
+		names.append(info["character_name"])
+	sync_lobby_state_rpc.rpc(peer_ids, character_paths, readys, names)
+	lobby_state_synced.emit()  # Server refresh UI (client ได้จาก sync_lobby_state_rpc)

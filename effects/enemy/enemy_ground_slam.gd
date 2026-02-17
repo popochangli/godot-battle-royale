@@ -60,21 +60,22 @@ func _physics_process(delta):
 		_sprite.scale = Vector2(visual_scale, visual_scale)
 		_sprite.modulate.a = 0.7 * (1.0 - progress)
 
-	for player in get_tree().get_nodes_in_group("player"):
-		if not is_instance_valid(player):
-			continue
-		if player in _hit_bodies:
-			continue
+	if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+		for player in get_tree().get_nodes_in_group("player"):
+			if not is_instance_valid(player):
+				continue
+			if player in _hit_bodies:
+				continue
 
-		var body_radius = _get_body_radius(player)
-		var dist = _wave_center.distance_to(player.global_position)
+			var body_radius = _get_body_radius(player)
+			var dist = _wave_center.distance_to(player.global_position)
 
-		# Hit if player is within the entire expanded area (filled circle, not just wave front)
-		# This prevents fast players from jumping through the wave
-		if dist < _current_radius + body_radius:
-			if player.has_method("take_damage"):
-				player.take_damage(damage)
-			_hit_bodies.append(player)
+			# Hit if player is within the entire expanded area (filled circle, not just wave front)
+			# This prevents fast players from jumping through the wave
+			if dist < _current_radius + body_radius:
+				if player.has_method("take_damage"):
+					player.take_damage(damage)
+				_hit_bodies.append(player)
 
 func _setup_visuals() -> void:
 	var img = Image.create(_circle_size, _circle_size, false, Image.FORMAT_RGBA8)

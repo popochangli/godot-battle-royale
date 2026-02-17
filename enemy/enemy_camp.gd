@@ -28,18 +28,21 @@ func _ready():
 	# Auto-create configs if none provided
 	if camp_configs.size() == 0:
 		_create_default_configs()
-
-	_spawn_enemies()
+	# Spawn is triggered by Main._trigger_enemy_camp_spawns() for both SP and MP
 
 func _process(delta):
 	if not has_spawned:
 		return
 
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
+
 	if not is_cleared:
-		# Check if all enemies are dead
+		# Check if all enemies are dead (use meta when enemies are in EnemiesContainer)
+		var camp_path = str(get_path())
 		var alive_count = 0
-		for child in get_children():
-			if child is CharacterBody2D and child.is_in_group("enemy"):
+		for e in get_tree().get_nodes_in_group("enemy"):
+			if e.has_meta("camp_path") and e.get_meta("camp_path") == camp_path:
 				alive_count += 1
 		if alive_count == 0:
 			is_cleared = true
@@ -88,8 +91,52 @@ func _spawn_configured_enemies():
 
 	# XP multiplier based on difficulty tier: tier 1 (hard) = 1.5x, tier 2 (medium) = 1.0x, tier 3 (easy) = 0.7x
 	var xp_multiplier = _get_xp_multiplier(active_config.difficulty_tier)
+	var camp_path = str(get_path())
 
-	# Spawn 1 leader
+	if multiplayer.multiplayer_peer != null and multiplayer.is_server():
+		var spawner = get_parent().get_node_or_null("EnemiesContainer/EnemySpawner")
+		if spawner and spawner.has_method("spawn"):
+			# Spawn 1 leader
+			var angle = randf() * TAU
+			var dist = randf() * spawn_radius
+			var spawn_offset = Vector2(cos(angle), sin(angle)) * dist
+			var leader_data = {
+				"pos": global_position + spawn_offset,
+				"camp_center": global_position,
+				"patrol_radius": patrol_radius,
+				"leash_range": leash_range,
+				"aggro_timeout": aggro_timeout,
+				"camp_path": camp_path,
+				"is_leader": true,
+				"xp_value": int(active_config.leader_stats.xp_value * xp_multiplier) if active_config.leader_stats else 25,
+				"leader_stats_path": active_config.leader_stats.resource_path if active_config.leader_stats else "",
+				"minion_stats_path": active_config.minion_stats.resource_path if active_config.minion_stats else "",
+				"leader_skill_path": active_config.leader_skill.resource_path if active_config.leader_skill else ""
+			}
+			spawner.spawn(leader_data)
+
+			# Spawn 2 minions
+			for i in 2:
+				angle = randf() * TAU
+				dist = randf() * spawn_radius
+				spawn_offset = Vector2(cos(angle), sin(angle)) * dist
+				var minion_data = {
+					"pos": global_position + spawn_offset,
+					"camp_center": global_position,
+					"patrol_radius": patrol_radius,
+					"leash_range": leash_range,
+					"aggro_timeout": aggro_timeout,
+					"camp_path": camp_path,
+					"is_leader": false,
+					"xp_value": int(active_config.minion_stats.xp_value * xp_multiplier) if active_config.minion_stats else 15,
+					"leader_stats_path": active_config.leader_stats.resource_path if active_config.leader_stats else "",
+					"minion_stats_path": active_config.minion_stats.resource_path if active_config.minion_stats else "",
+					"leader_skill_path": ""
+				}
+				spawner.spawn(minion_data)
+		return
+
+	# Single-player: spawn as children
 	var leader = enemy_scene.instantiate()
 	leader.enemy_stats = active_config.leader_stats
 	leader.leader_skill = active_config.leader_skill
@@ -101,7 +148,6 @@ func _spawn_configured_enemies():
 	add_child(leader)
 	leader.set_camp(self, global_position, patrol_radius, leash_range, aggro_timeout)
 
-	# Spawn 2 minions
 	for i in 2:
 		var minion = enemy_scene.instantiate()
 		minion.enemy_stats = active_config.minion_stats

@@ -13,7 +13,7 @@ func _ready():
 	monitorable = false
 	monitoring = true
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 
 	var collision = CollisionShape2D.new()
 	var shape = RectangleShape2D.new()
@@ -39,6 +39,8 @@ func _physics_process(delta):
 	_apply_effects()
 
 func _apply_effects() -> void:
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	var bodies = get_overlapping_bodies()
 	for body in bodies:
 		if body != caster:

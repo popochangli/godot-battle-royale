@@ -11,7 +11,7 @@ var _detonated: bool = false
 func _ready():
 	add_to_group("techies_mines")
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 	set_meta("owner_id", owner_id)
 	set_meta("scaled_damage", damage)
 
@@ -63,7 +63,7 @@ func _do_explosion(explosion_pos: Vector2) -> void:
 	var explosion = Area2D.new()
 	explosion.add_to_group("explosion")
 	explosion.collision_layer = 0
-	explosion.collision_mask = 2
+	explosion.collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()
@@ -83,31 +83,34 @@ func _do_explosion(explosion_pos: Vector2) -> void:
 		var c = caster_ref.get_ref()
 		if parent and parent.has_method("take_damage") and parent != c and parent not in damaged_targets:
 			damaged_targets.append(parent)
-			parent.take_damage(scaled_damage, c)
+			if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+				parent.take_damage(scaled_damage, c)
 	)
 
 	explosion.body_entered.connect(func(body):
 		var c = caster_ref.get_ref()
 		if body.has_method("take_damage") and body != c and body not in damaged_targets:
 			damaged_targets.append(body)
-			body.take_damage(scaled_damage, c)
+			if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+				body.take_damage(scaled_damage, c)
 	)
 
 	await caster.get_tree().physics_frame
 	await caster.get_tree().physics_frame
 
-	for area in explosion.get_overlapping_areas():
-		var parent = area.get_parent()
-		var c = caster_ref.get_ref()
-		if parent and parent.has_method("take_damage") and parent != c and parent not in damaged_targets:
-			damaged_targets.append(parent)
-			parent.take_damage(scaled_damage, c)
+	if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+		for area in explosion.get_overlapping_areas():
+			var parent = area.get_parent()
+			var c = caster_ref.get_ref()
+			if parent and parent.has_method("take_damage") and parent != c and parent not in damaged_targets:
+				damaged_targets.append(parent)
+				parent.take_damage(scaled_damage, c)
 
-	for body in explosion.get_overlapping_bodies():
-		var c = caster_ref.get_ref()
-		if body.has_method("take_damage") and body != c and body not in damaged_targets:
-			damaged_targets.append(body)
-			body.take_damage(scaled_damage, c)
+		for body in explosion.get_overlapping_bodies():
+			var c = caster_ref.get_ref()
+			if body.has_method("take_damage") and body != c and body not in damaged_targets:
+				damaged_targets.append(body)
+				body.take_damage(scaled_damage, c)
 
 	explosion.monitoring = false
 	await caster.get_tree().create_timer(0.3).timeout

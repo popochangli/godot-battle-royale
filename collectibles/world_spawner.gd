@@ -18,6 +18,9 @@ func _ready():
 	zone_manager = get_tree().get_first_node_in_group("zone_manager")
 
 func _physics_process(delta):
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
+
 	if zone_manager == null:
 		zone_manager = get_tree().get_first_node_in_group("zone_manager")
 		if zone_manager == null:
@@ -46,7 +49,11 @@ func _try_spawn_rune():
 	var rune = rune_scene.instantiate()
 	rune.rune_data = health_rune_data
 	rune.global_position = spawn_pos
-	get_parent().add_child(rune)
+	var container = get_tree().get_first_node_in_group("collectibles_container")
+	if container:
+		container.add_child(rune, true)
+	else:
+		get_parent().add_child(rune, true)
 
 func _try_spawn_ore():
 	var current_ores = get_tree().get_nodes_in_group("ore").size()
@@ -60,7 +67,11 @@ func _try_spawn_ore():
 	var ore = ore_scene.instantiate()
 	ore.ore_data = iron_ore_data
 	ore.global_position = spawn_pos
-	get_parent().add_child(ore)
+	var container = get_tree().get_first_node_in_group("collectibles_container")
+	if container:
+		container.add_child(ore, true)
+	else:
+		get_parent().add_child(ore, true)
 
 func _get_random_zone_position() -> Vector2:
 	if zone_manager == null or not zone_manager.has_method("get_zone_info"):

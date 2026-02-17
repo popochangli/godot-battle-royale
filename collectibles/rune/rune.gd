@@ -7,7 +7,7 @@ var glow_particles: GPUParticles2D
 func _ready():
 	add_to_group("rune")
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 1
 
 	body_entered.connect(_on_body_entered)
 
@@ -53,6 +53,8 @@ func _create_glow_particles() -> GPUParticles2D:
 	return particles
 
 func _on_body_entered(body: Node2D):
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	if not body.is_in_group("player"):
 		return
 

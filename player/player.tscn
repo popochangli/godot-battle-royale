@@ -18,6 +18,8 @@ font_size = 8
 collision_mask = 49
 script = ExtResource("1_4flbx")
 
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=763063774]
 scale = Vector2(32, 32)
 texture = SubResource("CanvasTexture_rkbax")

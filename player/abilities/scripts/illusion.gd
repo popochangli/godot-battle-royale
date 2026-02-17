@@ -18,8 +18,8 @@ func setup(tgt: Node2D, dmg: float, dmg_mult: float, dur: float, owner_node: Nod
 	duration = dur
 	caster = owner_node
 	
-	add_to_group("player_ally") 
-	add_to_group("player") 
+	add_to_group("player_ally")
+	add_to_group("player_illusion")
 	
 	get_tree().create_timer(duration).timeout.connect(queue_free)
 
@@ -42,13 +42,16 @@ func _physics_process(delta):
 			
 func attack():
 	attack_timer = attack_cooldown
-	if target.has_method("take_damage"):
-		target.take_damage(damage, caster)
+	if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+		if target and target.has_method("take_damage"):
+			target.take_damage(damage, caster)
 		var tween = create_tween()
 		tween.tween_property(self, "modulate:v", 2.0, 0.1) 
 		tween.tween_property(self, "modulate:v", 1.0, 0.1)
 
 func take_damage(amount, attacker=null):
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	var actual_damage = amount * incoming_damage_multiplier
 	if not "health" in self:
 		self.set_meta("health", 100.0)

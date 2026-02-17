@@ -36,6 +36,13 @@ func _ready():
 	$MarginContainer/MainVBox/ContentHBox/LeftVBox/CarouselRow/BtnNext.pressed.connect(_on_next_pressed)
 	$MarginContainer/MainVBox/PlayButton.pressed.connect(_on_play_pressed)
 	
+	if multiplayer.multiplayer_peer != null:
+		_setup_multiplayer()
+	else:
+		var btn = $MarginContainer/MainVBox/PlayButton
+		if btn:
+			btn.text = "PLAY"
+	
 	if ab1_icon:
 		ab1_icon.mouse_filter = Control.MOUSE_FILTER_STOP 
 		ab1_icon.mouse_entered.connect(func(): _show_ability_desc(1, true))
@@ -84,6 +91,56 @@ func _apply_layout_fixes():
 	var btn_play = $MarginContainer/MainVBox/PlayButton
 	if btn_play:
 		btn_play.add_theme_font_size_override("font_size", 12)
+
+func _setup_multiplayer() -> void:
+	var btn = $MarginContainer/MainVBox/PlayButton
+	if btn:
+		btn.text = "CONFIRM"
+	NetworkManager.player_connected.connect(_on_player_connected)
+	NetworkManager.player_disconnected.connect(_on_player_disconnected)
+	if multiplayer.is_server():
+		_sync_initial_state()
+		# เติม peers ที่เชื่อมต่อก่อนโหลด scene
+		for pid in multiplayer.get_peers():
+			if not NetworkManager.players_info.has(pid):
+				NetworkManager.players_info[pid] = {
+					"character_path": "",
+					"spawn_pos": Vector2.ZERO,
+					"ready": false,
+					"character_name": ""
+				}
+	else:
+		await get_tree().process_frame
+		NetworkManager.request_full_sync_rpc.rpc_id(1)
+		NetworkManager.submit_player_name_rpc.rpc_id(1, multiplayer.get_unique_id(), NetworkManager.my_player_name)
+
+func _sync_initial_state() -> void:
+	var my_id = multiplayer.get_unique_id()
+	var my_name = NetworkManager.my_player_name if NetworkManager.my_player_name else ""
+	if not NetworkManager.players_info.has(my_id):
+		NetworkManager.players_info[my_id] = {
+			"character_path": "",
+			"spawn_pos": Vector2.ZERO,
+			"ready": false,
+			"character_name": my_name
+		}
+	else:
+		NetworkManager.players_info[my_id]["character_name"] = my_name
+	NetworkManager._broadcast_lobby_state()
+
+func _on_player_connected(peer_id: int) -> void:
+	if multiplayer.is_server():
+		NetworkManager.players_info[peer_id] = {
+			"character_path": "",
+			"spawn_pos": Vector2.ZERO,
+			"ready": false,
+			"character_name": ""
+		}
+		NetworkManager._broadcast_lobby_state()
+
+func _on_player_disconnected(_peer_id: int) -> void:
+	if multiplayer.is_server():
+		NetworkManager._broadcast_lobby_state()
 
 func _show_ability_desc(index: int, show: bool):
 	var target_alpha = 1.0 if show else 0.0
@@ -150,6 +207,16 @@ func _on_prev_pressed():
 
 func _on_play_pressed():
 	var data = characters[current_index]
-	GameState.selected_character = data
-	GameState.reset_progression()
-	get_tree().change_scene_to_file("res://ui/spawn_select.tscn")
+	var char_path = CHARACTER_PATHS[current_index]
+	if multiplayer.multiplayer_peer != null:
+		var my_id = multiplayer.get_unique_id()
+		if multiplayer.is_server():
+			NetworkManager.set_character_rpc(my_id, char_path)
+		else:
+			NetworkManager.set_character_rpc.rpc_id(1, my_id, char_path)
+		await get_tree().process_frame
+		get_tree().change_scene_to_file("res://ui/lobby.tscn")
+	else:
+		GameState.selected_character = data
+		GameState.reset_progression()
+		get_tree().change_scene_to_file("res://ui/spawn_select.tscn")

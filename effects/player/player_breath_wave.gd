@@ -5,7 +5,7 @@ var caster: Node2D
 
 func _ready():
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 	add_to_group("projectile")
 	speed = 400.0
 
@@ -30,11 +30,11 @@ func _on_spawned():
 
 func _on_body_entered(body: Node2D) -> void:
 	if body != caster and body.has_method("take_damage"):
-		body.take_damage(damage, caster)
-
-		if breath_type == "fire":
-			if body.has_method("apply_burn"):
-				body.apply_burn("dual_breath", int(damage * 0.5), 3.0, caster)
-		else:
-			if body.has_method("apply_slow"):
-				body.apply_slow("dual_breath", 30.0, 3.0)
+		if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+			body.take_damage(damage, caster)
+			if breath_type == "fire":
+				if body.has_method("apply_burn"):
+					body.apply_burn("dual_breath", int(damage * 0.5), 3.0, caster)
+			else:
+				if body.has_method("apply_slow"):
+					body.apply_slow("dual_breath", 30.0, 3.0)

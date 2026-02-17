@@ -6,13 +6,14 @@ extends Area2D
 @export var effect_color: Color = Color(0.4, 0.7, 1.0)
 
 var field_radius: float = 100.0
+var follow_target: Node2D = null
 
 var _elapsed: float = 0.0
 var _enemies_in_field: Dictionary = {}
 
 func _ready():
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()
@@ -28,15 +29,19 @@ func _ready():
 	body_exited.connect(_on_body_exited)
 
 func _process(delta):
+	if follow_target and is_instance_valid(follow_target):
+		global_position = follow_target.global_position
+
 	_elapsed += delta
 	if _elapsed >= duration:
 		queue_free()
 		return
 
-	var slow_amount = slow_per_second * delta
-	for enemy in _enemies_in_field.keys():
-		if is_instance_valid(enemy):
-			enemy.add_slow("freezing_field", slow_amount, slow_duration)
+	if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+		var slow_amount = slow_per_second * delta
+		for enemy in _enemies_in_field.keys():
+			if is_instance_valid(enemy):
+				enemy.add_slow("freezing_field", slow_amount, slow_duration)
 
 func _on_area_entered(area: Area2D) -> void:
 	var parent = area.get_parent()

@@ -11,15 +11,14 @@ config_version=5
 [application]
 
 config/name="BattleRoyalGame"
-run/main_scene="res://ui/character_select.tscn"
+run/main_scene="res://ui/main_menu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GameState="*res://autoload/game_state.gd"
-config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+NetworkManager="*res://autoload/network_manager.gd"
 
 [display]
 
@@ -30,7 +29,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg")
+enabled=PackedStringArray()
 
 [input]
 

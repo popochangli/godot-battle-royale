@@ -28,6 +28,8 @@ func _setup_visuals():
 		sprite.modulate = ore_data.ore_color
 
 func take_damage(amount, attacker: Node = null):
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	if attacker:
 		last_attacker = attacker
 
@@ -42,6 +44,9 @@ func update_health_bar():
 		health_bar.value = health
 
 func die():
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	if last_attacker and last_attacker.is_in_group("player") and ore_data:
-		GameState.add_xp(ore_data.xp_value)
+		var peer = last_attacker.get_multiplayer_authority() if last_attacker.has_method("get_multiplayer_authority") else 1
+		GameState.add_xp(peer, ore_data.xp_value)
 	queue_free()
