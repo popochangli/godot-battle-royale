@@ -1,24 +1,50 @@
 extends Node
 
-const PoisonArrowScene = preload("res://effects/enemy/enemy_poison_arrow.tscn")
+const POISON_ARROW_SCENE_PATH := "res://effects/enemy/enemy_poison_arrow.tscn"
 
 static func execute(caster: Node2D, data: EnemySkillData) -> void:
 	var player = _find_nearest_player(caster)
 	if not player:
 		return
 
-	var arrow = PoisonArrowScene.instantiate()
-	arrow.direction = (player.global_position - caster.global_position).normalized()
-	arrow.locked_target = player
-	arrow.target_peer_id = player.get_multiplayer_authority() if player.has_method("get_multiplayer_authority") else 1
-	arrow.damage = data.damage
-	arrow.effect_color = data.effect_color
+	var target_peer_id = player.get_multiplayer_authority() if player.has_method("get_multiplayer_authority") else 1
+	_spawn_synced_effect(caster, {
+		"scene": POISON_ARROW_SCENE_PATH,
+		"pos": caster.global_position,
+		"direction": (player.global_position - caster.global_position).normalized(),
+		"target_peer_id": target_peer_id,
+		"damage": data.damage,
+		"effect_color": [data.effect_color.r, data.effect_color.g, data.effect_color.b, data.effect_color.a],
+	})
+
+static func _spawn_synced_effect(caster: Node2D, effect_data: Dictionary) -> void:
+	var main = caster.get_tree().current_scene
+	if main and main.has_method("spawn_effect_sync"):
+		main.spawn_effect_sync(effect_data)
+		return
+
+	# Fallback for non-network/offline contexts.
+	if not ResourceLoader.exists(effect_data.get("scene", "")):
+		return
+	var effect_scene = load(effect_data["scene"]) as PackedScene
+	var effect = effect_scene.instantiate()
+	effect.global_position = effect_data.get("pos", caster.global_position)
+	if effect_data.has("direction"):
+		effect.direction = effect_data["direction"]
+	if effect_data.has("target_peer_id"):
+		effect.target_peer_id = effect_data["target_peer_id"]
+	if effect_data.has("damage"):
+		effect.damage = effect_data["damage"]
+	if effect_data.has("effect_color"):
+		var c = effect_data["effect_color"]
+		if c is Array and c.size() >= 4:
+			effect.effect_color = Color(c[0], c[1], c[2], c[3])
+
 	var effects = caster.get_tree().get_first_node_in_group("effects_container")
 	if effects:
-		effects.add_child(arrow, true)
-	else:
-		caster.get_parent().add_child(arrow, true)
-	arrow.global_position = caster.global_position
+		effects.add_child(effect, true)
+	elif caster.get_parent():
+		caster.get_parent().add_child(effect, true)
 
 static func _find_nearest_player(caster: Node2D) -> Node2D:
 	var nearest = null

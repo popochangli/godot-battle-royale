@@ -239,11 +239,23 @@ func _create_effect_from_data(data: Dictionary) -> Node:
 	var scene = load(scene_path) as PackedScene
 	var effect = scene.instantiate()
 	effect.global_position = pos
-	var prop_names = ["direction", "damage", "max_range", "effect_color", "caster_peer_id", "target_position", "explosion_radius", "breath_type"]
+	var prop_names = [
+		"direction",
+		"damage",
+		"radius",
+		"max_range",
+		"effect_color",
+		"trail_color",
+		"target_peer_id",
+		"caster_peer_id",
+		"target_position",
+		"explosion_radius",
+		"breath_type",
+	]
 	for p in prop_names:
 		if data.has(p):
 			var val = data[p]
-			if p == "effect_color" and val is Array:
+			if (p == "effect_color" or p == "trail_color") and val is Array:
 				val = Color(val[0], val[1], val[2], val[3]) if val.size() >= 4 else Color.WHITE
 			effect.set(p, val)
 	return effect

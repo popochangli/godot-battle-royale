@@ -272,21 +272,40 @@ func set_camp(camp_node: Node2D, center: Vector2, patrol_rad: float, leash: floa
 	_pick_new_idle_target()
 
 const RangedAttackScene = preload("res://effects/enemy/enemy_ranged_attack.tscn")
+const RANGED_ATTACK_SCENE_PATH := "res://effects/enemy/enemy_ranged_attack.tscn"
 
-func _shoot_projectile(_direction: Vector2) -> void:
-	if not player:
+func _spawn_synced_effect(effect_data: Dictionary) -> void:
+	var main = get_tree().current_scene
+	if main and main.has_method("spawn_effect_sync"):
+		main.spawn_effect_sync(effect_data)
 		return
+
+	# Fallback for non-network/offline contexts.
 	var projectile = RangedAttackScene.instantiate()
-	projectile.locked_target = player
-	projectile.target_peer_id = player.get_multiplayer_authority() if player.has_method("get_multiplayer_authority") else 1
-	projectile.damage = damage
-	projectile.trail_color = enemy_stats.color_tint if enemy_stats else Color.RED
+	projectile.damage = effect_data.get("damage", damage)
+	projectile.target_peer_id = effect_data.get("target_peer_id", 1)
+	var c = effect_data.get("trail_color", [1.0, 0.0, 0.0, 1.0])
+	if c is Array and c.size() >= 4:
+		projectile.trail_color = Color(c[0], c[1], c[2], c[3])
+	projectile.global_position = effect_data.get("pos", global_position)
 	var effects = get_tree().get_first_node_in_group("effects_container")
 	if effects:
 		effects.add_child(projectile, true)
 	else:
 		get_parent().add_child(projectile, true)
-	projectile.global_position = global_position
+
+func _shoot_projectile(_direction: Vector2) -> void:
+	if not player:
+		return
+	var target_peer_id = player.get_multiplayer_authority() if player.has_method("get_multiplayer_authority") else 1
+	var trail = enemy_stats.color_tint if enemy_stats else Color.RED
+	_spawn_synced_effect({
+		"scene": RANGED_ATTACK_SCENE_PATH,
+		"pos": global_position,
+		"target_peer_id": target_peer_id,
+		"damage": damage,
+		"trail_color": [trail.r, trail.g, trail.b, trail.a],
+	})
 
 func attack_player():
 	if player and player.has_method("take_damage"):
