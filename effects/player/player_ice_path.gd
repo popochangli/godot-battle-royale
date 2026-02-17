@@ -39,6 +39,8 @@ func _physics_process(delta):
 	_apply_effects()
 
 func _apply_effects() -> void:
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	var bodies = get_overlapping_bodies()
 	for body in bodies:
 		if body != caster:

@@ -6,4 +6,6 @@
 script = ExtResource("1_rune_data")
 rune_id = "health_rune"
 display_name = "Health Rune"
+effect_type = "heal"
+effect_value = 0.5
 glow_color = Color(0.2, 1, 0.3, 1)

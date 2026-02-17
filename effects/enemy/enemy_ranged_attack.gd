@@ -23,7 +23,9 @@ func _setup_visuals() -> void:
 	add_child(particles)
 
 func _check_hit(_delta: float) -> void:
-	var target = _target_ref.get_ref() if _target_ref else null
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
+	var target = _get_target()
 	if not target:
 		return
 

@@ -30,6 +30,8 @@ func _setup_visuals() -> void:
 	add_child(particles)
 
 func _check_hit(_delta: float) -> void:
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	for p in get_tree().get_nodes_in_group("player"):
 		if is_instance_valid(p) and global_position.distance_to(p.global_position) < hit_radius:
 			p.take_damage(damage)

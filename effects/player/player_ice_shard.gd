@@ -33,9 +33,10 @@ func _do_hit(target: Node2D) -> void:
 	if target in _hit_targets:
 		return
 	_hit_targets.append(target)
-	target.take_damage(damage, caster)
-	if target.has_method("apply_slow"):
-		target.apply_slow("ice_blast", 5.0, 3.0)
+	if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+		target.take_damage(damage, caster)
+		if target.has_method("apply_slow"):
+			target.apply_slow("ice_blast", 5.0, 3.0)
 	_create_impact_particles()
 
 func _setup_visuals() -> void:

@@ -76,7 +76,8 @@ func _detonate() -> void:
 	area.body_entered.connect(func(body):
 		var c = caster_ref.get_ref()
 		if body.has_method("take_damage") and body != c:
-			body.take_damage(damage, c)
+			if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+				body.take_damage(damage, c)
 	)
 
 	await get_tree().physics_frame

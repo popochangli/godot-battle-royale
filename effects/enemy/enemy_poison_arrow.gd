@@ -28,7 +28,9 @@ func _setup_visuals() -> void:
 	add_child(particles)
 
 func _check_hit(_delta: float) -> void:
-	var target = _target_ref.get_ref() if _target_ref else null
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
+	var target = _get_target()
 	if not target:
 		return
 
@@ -41,6 +43,8 @@ func _check_hit(_delta: float) -> void:
 		queue_free()
 
 func _apply_poison_dot(player: Node) -> void:
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	var dot_damage_per_sec = 3
 	var tick_interval = 1.0
 	var state = { "ticks": 4, "tick_fn": Callable() }
@@ -51,6 +55,8 @@ func _apply_poison_dot(player: Node) -> void:
 
 	var player_ref = weakref(player)
 	state["tick_fn"] = func():
+		if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+			return
 		var p = player_ref.get_ref()
 		if not p or not is_instance_valid(p):
 			return

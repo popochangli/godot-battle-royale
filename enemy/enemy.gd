@@ -72,17 +72,21 @@ func _ready():
 		xp_value = enemy_stats.xp_value
 		original_modulate = Color.WHITE
 
-		# Use direction sprites if available
-		if enemy_stats.direction_sprites.size() == 8:
-			has_direction_sprites = true
-			$Sprite2D.texture = enemy_stats.direction_sprites[0]  # south default
+		# Use direction sprites if available (need at least 1 valid texture)
+		var first_sprite = enemy_stats.direction_sprites[0] if enemy_stats.direction_sprites.size() > 0 else null
+		if first_sprite != null:
+			has_direction_sprites = enemy_stats.direction_sprites.size() == 8
+			$Sprite2D.texture = first_sprite
 			$Sprite2D.scale = Vector2(enemy_stats.sprite_scale, enemy_stats.sprite_scale)
 			$Sprite2D.modulate = Color.WHITE
 			$Sprite2D.rotation = 0
 		else:
-			$Sprite2D.modulate = Color.WHITE
+			$Sprite2D.modulate = enemy_stats.color_tint
+			$Sprite2D.scale = Vector2(enemy_stats.sprite_scale * 24, enemy_stats.sprite_scale * 24)
+			original_modulate = enemy_stats.color_tint
 	else:
 		original_modulate = Color.WHITE
+		$Sprite2D.scale = Vector2(24, 24)  # Fallback size when no stats
 
 	is_leader = leader_skill != null
 
@@ -94,7 +98,23 @@ func _ready():
 		camp_center = global_position
 	_pick_new_idle_target()
 
+	if multiplayer.multiplayer_peer != null:
+		set_multiplayer_authority(1)
+		var sync = MultiplayerSynchronizer.new()
+		sync.set_multiplayer_authority(1)
+		add_child(sync)
+		var config = SceneReplicationConfig.new()
+		config.add_property(NodePath(".:position"))
+		config.add_property(NodePath(".:health"))
+		config.add_property(NodePath(".:current_state"))
+		config.add_property(NodePath(".:facing_direction"))
+		config.add_property(NodePath(".:current_visual_state"))
+		sync.replication_config = config
+
 func _physics_process(delta):
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
+
 	if attack_timer > 0:
 		attack_timer -= delta
 
@@ -106,7 +126,7 @@ func _physics_process(delta):
 	_process_burn_timers(delta)
 
 	if player == null:
-		player = get_tree().get_first_node_in_group("player")
+		player = _find_nearest_player()
 
 	# Try to use skill BEFORE movement so CASTING blocks movement this frame
 	# Don't cast when frozen
@@ -223,6 +243,18 @@ func _update_facing(target_pos: Vector2) -> void:
 	else:
 		$Sprite2D.look_at(target_pos)
 
+func _find_nearest_player() -> Node2D:
+	var nearest = null
+	var min_dist = INF
+	for p in get_tree().get_nodes_in_group("player"):
+		if p.get("health") and p.health <= 0:
+			continue
+		var d = global_position.distance_to(p.global_position)
+		if d < min_dist:
+			min_dist = d
+			nearest = p
+	return nearest
+
 func set_camp(camp_node: Node2D, center: Vector2, patrol_rad: float, leash: float, aggro_time: float):
 	camp = camp_node
 	camp_center = center
@@ -238,9 +270,14 @@ func _shoot_projectile(_direction: Vector2) -> void:
 		return
 	var projectile = RangedAttackScene.instantiate()
 	projectile.locked_target = player
+	projectile.target_peer_id = player.get_multiplayer_authority() if player.has_method("get_multiplayer_authority") else 1
 	projectile.damage = damage
 	projectile.trail_color = enemy_stats.color_tint if enemy_stats else Color.RED
-	get_parent().add_child(projectile)
+	var effects = get_tree().get_first_node_in_group("effects_container")
+	if effects:
+		effects.add_child(projectile)
+	else:
+		get_parent().add_child(projectile)
 	projectile.global_position = global_position
 
 func attack_player():
@@ -263,6 +300,8 @@ func attack_player():
 			player.take_damage(damage)
 
 func take_damage(amount, attacker: Node = null):
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	if is_invincible:
 		return
 
@@ -320,8 +359,11 @@ func _restore_visual_color() -> void:
 				$Sprite2D.modulate = Color(0.4, 0.8, 1.0)
 
 func die():
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
 	if last_attacker and last_attacker.is_in_group("player"):
-		GameState.add_xp(xp_value)
+		var attacker_peer = last_attacker.get_multiplayer_authority() if last_attacker.has_method("get_multiplayer_authority") else 1
+		GameState.add_xp(attacker_peer, xp_value)
 	queue_free()
 
 func update_health_bar():
@@ -508,7 +550,7 @@ func use_skill():
 	if not leader_skill or not leader_skill.skill_script:
 		return
 
-	var target_player = get_tree().get_first_node_in_group("player")
+	var target_player = _find_nearest_player()
 	if not target_player:
 		return
 

@@ -37,8 +37,7 @@ var phase_config: Array = [
 	{"wait_time": 60.0, "size_percent": 0.1, "shrink_duration": 3.0},
 ]
 
-var player: Node2D = null
-var accumulated_damage: float = 0.0
+var accumulated_damage: Dictionary = {}
 
 func _ready():
 	_calculate_map_bounds()
@@ -46,6 +45,23 @@ func _ready():
 	current_zone_radius = map_diagonal / 2.0
 	_prepare_next_zone()
 	phase_started.emit(0)
+
+	if multiplayer.multiplayer_peer != null:
+		var sync = MultiplayerSynchronizer.new()
+		sync.set_multiplayer_authority(1)
+		add_child(sync)
+		var config = SceneReplicationConfig.new()
+		config.add_property(NodePath(".:current_zone_center"))
+		config.add_property(NodePath(".:current_zone_radius"))
+		config.add_property(NodePath(".:next_zone_center"))
+		config.add_property(NodePath(".:next_zone_radius"))
+		config.add_property(NodePath(".:current_phase"))
+		config.add_property(NodePath(".:is_shrinking"))
+		config.add_property(NodePath(".:shrink_progress"))
+		config.add_property(NodePath(".:next_zone_visible"))
+		config.add_property(NodePath(".:game_elapsed_time"))
+		config.add_property(NodePath(".:phase_elapsed_time"))
+		sync.replication_config = config
 
 func _calculate_map_bounds():
 	var tilemap = get_tree().get_first_node_in_group("tilemap")
@@ -77,18 +93,21 @@ func _find_tilemaps(node: Node, result: Array):
 		_find_tilemaps(child, result)
 
 func _physics_process(delta):
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		var time_remaining = _get_time_remaining()
+		timer_updated.emit(time_remaining, game_elapsed_time)
+		return
+
 	game_elapsed_time += delta
 	phase_elapsed_time += delta
-
-	if player == null:
-		player = get_tree().get_first_node_in_group("player")
 
 	if is_shrinking:
 		_process_shrinking(delta)
 	else:
 		_process_waiting(delta)
 
-	_apply_zone_damage(delta)
+	if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+		_apply_zone_damage(delta)
 
 	var time_remaining = _get_time_remaining()
 	timer_updated.emit(time_remaining, game_elapsed_time)
@@ -153,21 +172,23 @@ func _prepare_next_zone():
 		next_zone_center = current_zone_center + Vector2(cos(angle), sin(angle)) * distance
 
 func _apply_zone_damage(delta):
-	if player == null:
-		return
-
-	var distance_to_center = player.global_position.distance_to(current_zone_center)
-	if distance_to_center > current_zone_radius:
-		var damage_multiplier = 1.0 + current_phase * 0.5
-		accumulated_damage += BASE_DAMAGE_PER_SECOND * damage_multiplier * delta
-
-		if accumulated_damage >= 1.0:
-			var damage_to_apply = int(accumulated_damage)
-			accumulated_damage -= damage_to_apply
-			if player.has_method("take_zone_damage"):
-				player.take_zone_damage(float(damage_to_apply))
-	else:
-		accumulated_damage = 0.0
+	var dmg_mult = 1.0 + current_phase * 0.5
+	for p in get_tree().get_nodes_in_group("player"):
+		if p.get("health") and p.health <= 0:
+			continue
+		var pid = p.get_multiplayer_authority() if p.has_method("get_multiplayer_authority") else 1
+		if not accumulated_damage.has(pid):
+			accumulated_damage[pid] = 0.0
+		var distance = p.global_position.distance_to(current_zone_center)
+		if distance > current_zone_radius:
+			accumulated_damage[pid] += BASE_DAMAGE_PER_SECOND * dmg_mult * delta
+			if accumulated_damage[pid] >= 1.0:
+				var dmg = int(accumulated_damage[pid])
+				accumulated_damage[pid] -= dmg
+				if p.has_method("take_zone_damage"):
+					p.take_zone_damage(float(dmg))
+		else:
+			accumulated_damage[pid] = 0.0
 
 func _get_time_remaining() -> float:
 	if current_phase >= phase_config.size() - 1:

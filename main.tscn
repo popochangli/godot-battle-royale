@@ -1,8 +1,5 @@
 [gd_scene format=3 uid="uid://c20s36aw8p3q4"]
 
-[ext_resource type="PackedScene" uid="uid://dmv1gp7w60gtu" path="res://player/player.tscn" id="1_0xm2m"]
-[ext_resource type="PackedScene" uid="uid://ctm7j8xk2hqpa" path="res://enemy/enemy_camp.tscn" id="3_1bvp3"]
-[ext_resource type="PackedScene" uid="uid://rb6txehi0m3g" path="res://assets/tiles/tile_map_layer.tscn" id="3_h2yge"]
 [ext_resource type="Script" uid="uid://b2gx1pt7bffkk" path="res://zone/zone_manager.gd" id="4_zone_mgr"]
 [ext_resource type="Script" uid="uid://ctls3mq27skmi" path="res://enemy/resources/camp_config.gd" id="5_efxa6"]
 [ext_resource type="Script" uid="uid://cos8jsobocf30" path="res://zone/zone_visual.gd" id="5_zone_vis"]
@@ -11,17 +8,39 @@
 [ext_resource type="Script" uid="uid://dxgukwxrawgse" path="res://collectibles/world_spawner.gd" id="7_world_spawner"]
 [ext_resource type="Resource" uid="uid://dnle5et8c1biw" path="res://enemy/camps/tank_camp.tres" id="7_ycdy4"]
 [ext_resource type="Resource" uid="uid://bed3y2mpw0u0" path="res://enemy/camps/ranged_camp.tres" id="8_w48qg"]
+[ext_resource type="Script" path="res://main.gd" id="9_main"]
+
+[ext_resource type="PackedScene" uid="uid://dmv1gp7w60gtu" path="res://player/player.tscn" id="1_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://ctm7j8xk2hqpa" path="res://enemy/enemy_camp.tscn" id="3_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://rb6txehi0m3g" path="res://assets/tiles/tile_map_layer.tscn" id="3_h2yge"]
 
 [node name="Main" type="Node2D" unique_id=1255103164]
+script = ExtResource("9_main")
 
 [node name="TileMapLayer" parent="." unique_id=1737278191 instance=ExtResource("3_h2yge")]
 
+[node name="PlayersContainer" type="Node2D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="PlayersContainer"]
+spawn_path = NodePath("..")
+
+[node name="EffectsContainer" type="Node2D" parent="." groups=["effects_container"]]
+
+[node name="EffectSpawner" type="MultiplayerSpawner" parent="EffectsContainer"]
+spawn_path = NodePath("..")
+
+[node name="EnemiesContainer" type="Node2D" parent="."]
+
+[node name="EnemySpawner" type="MultiplayerSpawner" parent="EnemiesContainer"]
+spawn_path = NodePath("..")
+
+[node name="CollectiblesContainer" type="Node2D" parent="." groups=["collectibles_container"]]
+
+[node name="CollectibleSpawner" type="MultiplayerSpawner" parent="CollectiblesContainer"]
+spawn_path = NodePath("..")
+
 [node name="ZoneVisual" type="CanvasLayer" parent="." unique_id=854211510]
 script = ExtResource("5_zone_vis")
-
-[node name="Player" parent="." unique_id=1831319049 instance=ExtResource("1_0xm2m")]
-position = Vector2(531, 182)
-collision_layer = 2
 
 [node name="EnemyCamp" parent="." unique_id=546603506 instance=ExtResource("3_1bvp3")]
 position = Vector2(878, -148)

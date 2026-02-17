@@ -1,12 +1,29 @@
 class_name HomingProjectile
 extends BaseProjectile
 
-var locked_target: Node2D:
-	set(value):
-		locked_target = value
-		_target_ref = weakref(value)
+var target_peer_id: int = -1
 
+var locked_target: Node2D:
+	get:
+		return _locked_target
+	set(value):
+		_locked_target = value
+		_target_ref = weakref(value) if value else null
+
+var _locked_target: Node2D
 var _target_ref: WeakRef
+
+func _get_target() -> Node2D:
+	if _target_ref:
+		var t = _target_ref.get_ref()
+		if t:
+			return t
+	for p in get_tree().get_nodes_in_group("player"):
+		if p.get_multiplayer_authority() == target_peer_id:
+			locked_target = p
+			_target_ref = weakref(p)
+			return p
+	return null
 
 func _physics_process(delta):
 	if not _spawn_ready:
@@ -23,7 +40,7 @@ func _physics_process(delta):
 		queue_free()
 		return
 
-	var target = _target_ref.get_ref() if _target_ref else null
+	var target = _get_target()
 	if not target:
 		queue_free()
 		return

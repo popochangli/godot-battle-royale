@@ -11,7 +11,17 @@ var map_rect: Rect2
 @onready var confirm_button = $ConfirmButton
 @onready var spawn_marker = $SpawnMarker
 
+var _status_label: Label
+
 func _ready():
+	if multiplayer.multiplayer_peer != null:
+		_status_label = Label.new()
+		_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_status_label.add_theme_font_size_override("font_size", 16)
+		_status_label.position = Vector2(20, 55)
+		_status_label.size = Vector2(600, 24)
+		_status_label.text = "Select your spawn location"
+		add_child(_status_label)
 	confirm_button.disabled = true
 	spawn_marker.visible = false
 	spawn_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -59,5 +69,34 @@ func _update_marker_position(local_pos: Vector2):
 	spawn_marker.visible = true
 
 func _on_confirm_button_pressed():
-	GameState.spawn_position = selected_position
+	if multiplayer.multiplayer_peer != null:
+		var my_id = multiplayer.get_unique_id()
+		_submit_spawn.rpc_id(1, my_id, selected_position)
+		confirm_button.disabled = true
+		if _status_label:
+			_status_label.text = "Waiting for other players..."
+	else:
+		GameState.spawn_position = selected_position
+		var pd = GameState._ensure_player_data(1)
+		pd["spawn_position"] = selected_position
+		pd["spawn_confirmed"] = true
+		get_tree().change_scene_to_file("res://main.tscn")
+
+@rpc("any_peer", "reliable")
+func _submit_spawn(peer_id: int, pos: Vector2):
+	if not multiplayer.is_server():
+		return
+	var pd = GameState._ensure_player_data(peer_id)
+	pd["spawn_position"] = pos
+	pd["spawn_confirmed"] = true
+	var total = NetworkManager.players_info.size()
+	var confirmed = 0
+	for pid in NetworkManager.players_info:
+		if GameState._ensure_player_data(pid).get("spawn_confirmed"):
+			confirmed += 1
+	if confirmed >= total:
+		_load_game.rpc()
+
+@rpc("authority", "reliable")
+func _load_game():
 	get_tree().change_scene_to_file("res://main.tscn")

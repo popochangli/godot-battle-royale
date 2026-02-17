@@ -32,5 +32,6 @@ func _on_body_entered(body: Node2D) -> void:
 	if body != caster and body.has_method("take_damage"):
 		_hit = true
 		monitoring = false
-		body.take_damage(damage * damage_multiplier, caster)
+		if multiplayer.multiplayer_peer == null or multiplayer.is_server():
+			body.take_damage(damage * damage_multiplier, caster)
 		queue_free()
