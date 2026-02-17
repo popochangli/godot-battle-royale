@@ -13,7 +13,7 @@
 [resource]
 script = ExtResource("1_ja00h")
 max_health = 200
-speed = 100.0
+speed = 200.0
 damage = 15
 xp_value = 50
 sprite_scale = 1.3

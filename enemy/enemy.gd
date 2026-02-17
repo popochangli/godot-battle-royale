@@ -231,119 +231,17 @@ func set_camp(camp_node: Node2D, center: Vector2, patrol_rad: float, leash: floa
 	aggro_timeout = aggro_time
 	_pick_new_idle_target()
 
+const RangedAttackScene = preload("res://effects/enemy/enemy_ranged_attack.tscn")
+
 func _shoot_projectile(_direction: Vector2) -> void:
-	# Phase 1+3: Homing projectile that locks onto the current target (like Dota 2 auto-attack)
-	var locked_target = player  # Lock target at the moment of firing
-	if not locked_target:
+	if not player:
 		return
-
-	var projectile = Area2D.new()
-	projectile.collision_layer = 0
-	projectile.collision_mask = 0  # Use distance-based hit detection
-
-	# Visible sprite (small arrow projectile)
-	var sprite = Sprite2D.new()
-	var img = Image.create(1, 1, false, Image.FORMAT_RGBA8)
-	img.fill(Color.WHITE)
-	var tex = ImageTexture.create_from_image(img)
-	sprite.texture = tex
-	sprite.centered = true
-	sprite.scale = Vector2(6, 8)
-	sprite.modulate = original_modulate if original_modulate != Color.WHITE else Color.RED
-	projectile.add_child(sprite)
-
-	# Add trail particles based on enemy color
-	var particles = _create_projectile_trail()
-	projectile.add_child(particles)
-
-	# Add to scene, then set position
+	var projectile = RangedAttackScene.instantiate()
+	projectile.locked_target = player
+	projectile.damage = damage
+	projectile.trail_color = enemy_stats.color_tint if enemy_stats else Color.RED
 	get_parent().add_child(projectile)
 	projectile.global_position = global_position
-	var spawn_position = global_position
-
-	# Homing parameters
-	var proj_speed = 350.0
-	var hit_radius = 20.0
-	var max_lifetime = 4.0
-	var max_despawn_range = 600.0
-	var lifetime = 0.0
-	var damage_dealt = false
-	var enemy_damage = damage
-
-	# Use weakref for target (may die during flight)
-	var target_ref = weakref(locked_target)
-
-	# Timer-based homing update
-	var timer = Timer.new()
-	timer.wait_time = 0.016  # ~60 FPS
-	timer.one_shot = false
-	projectile.add_child(timer)
-
-	timer.timeout.connect(func():
-		if damage_dealt or not is_instance_valid(projectile):
-			return
-
-		lifetime += timer.wait_time
-		if lifetime > max_lifetime:
-			projectile.queue_free()
-			return
-
-		# Despawn if too far from spawn point (safety net)
-		if projectile.global_position.distance_to(spawn_position) > max_despawn_range:
-			projectile.queue_free()
-			return
-
-		# If target is gone, despawn
-		var target = target_ref.get_ref()
-		if not target:
-			projectile.queue_free()
-			return
-
-		var dist_to_target = projectile.global_position.distance_to(target.global_position)
-
-		# Hit check
-		if dist_to_target < hit_radius:
-			if target.has_method("take_damage"):
-				target.take_damage(enemy_damage)
-			damage_dealt = true
-			projectile.queue_free()
-			return
-
-		# Move toward locked target
-		var move_dir = (target.global_position - projectile.global_position).normalized()
-		projectile.global_position += move_dir * proj_speed * timer.wait_time
-	)
-
-	timer.start()
-
-func _create_projectile_trail() -> GPUParticles2D:
-	var particles = GPUParticles2D.new()
-	particles.amount = 8
-	particles.lifetime = 0.3
-	particles.one_shot = false
-	particles.emitting = true
-
-	var material = ParticleProcessMaterial.new()
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	material.emission_sphere_radius = 2.0
-	material.spread = 180.0
-	material.initial_velocity_min = 5.0
-	material.initial_velocity_max = 10.0
-	material.gravity = Vector3.ZERO
-	material.scale_min = 2.0
-	material.scale_max = 3.0
-
-	var gradient = GradientTexture1D.new()
-	var grad = Gradient.new()
-	var trail_color = original_modulate if original_modulate != Color.WHITE else Color.RED
-	grad.set_color(0, Color(trail_color.r, trail_color.g, trail_color.b, 0.8))
-	grad.set_color(1, Color(trail_color.r, trail_color.g, trail_color.b, 0.0))
-	gradient.gradient = grad
-	material.color_ramp = gradient
-	material.color = trail_color
-
-	particles.process_material = material
-	return particles
 
 func attack_player():
 	if player and player.has_method("take_damage"):

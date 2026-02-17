@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpbreathwave1"]
+
+[ext_resource type="Script" path="res://effects/player/player_breath_wave.gd" id="1_script"]
+
+[node name="PlayerBreathWave" type="Area2D"]
+script = ExtResource("1_script")
+speed = 400.0
+max_lifetime = 5.0
+damage = 20
