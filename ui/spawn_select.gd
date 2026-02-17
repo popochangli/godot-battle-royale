@@ -4,6 +4,7 @@ var selected_position: Vector2 = Vector2.ZERO
 var has_selected: bool = false
 var spawn_confirmed: bool = false
 var map_rect: Rect2
+const MAP_EDGE_MARGIN: float = 48.0  # ระยะห่างจากขอบแผนที่ (ป้องกันเกิดนอกพื้นที่เดินได้)
 
 @onready var subviewport_container = $SubViewportContainer
 @onready var subviewport = $SubViewportContainer/SubViewport
@@ -33,7 +34,7 @@ func _ready():
 		start_button.pressed.connect(_on_start_pressed)
 
 	var used_rect = tilemap.get_used_rect()
-	var tile_size = tilemap.tile_set.tile_size
+	var tile_size = tilemap.tile_set.tile_size if tilemap.tile_set else Vector2i(32, 32)
 	map_rect = Rect2(
 		Vector2(used_rect.position) * Vector2(tile_size),
 		Vector2(used_rect.size) * Vector2(tile_size)
@@ -70,6 +71,14 @@ func _on_start_pressed():
 	if multiplayer.is_server():
 		_load_game.rpc()
 
+func _get_valid_spawn_rect() -> Rect2:
+	## พื้นที่ที่กดได้ (ภายในแผนที่ห่างจากขอบ MAP_EDGE_MARGIN)
+	var margin = Vector2(MAP_EDGE_MARGIN, MAP_EDGE_MARGIN)
+	var size = map_rect.size - margin * 2
+	size.x = max(32.0, size.x)
+	size.y = max(32.0, size.y)
+	return Rect2(map_rect.position + margin, size)
+
 func _on_sub_viewport_container_gui_input(event: InputEvent):
 	if spawn_confirmed:
 		return
@@ -88,8 +97,13 @@ func _on_sub_viewport_container_gui_input(event: InputEvent):
 			normalized_y * view_size.y
 		)
 
-		selected_position.x = clamp(selected_position.x, map_rect.position.x + 50, map_rect.end.x - 50)
-		selected_position.y = clamp(selected_position.y, map_rect.position.y + 50, map_rect.end.y - 50)
+		var valid_rect = _get_valid_spawn_rect()
+		if not valid_rect.has_point(selected_position):
+			# กดนอกแผนที่ - ไม่รับ
+			return
+
+		selected_position.x = clamp(selected_position.x, valid_rect.position.x, valid_rect.end.x)
+		selected_position.y = clamp(selected_position.y, valid_rect.position.y, valid_rect.end.y)
 
 		has_selected = true
 		confirm_button.disabled = false

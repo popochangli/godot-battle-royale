@@ -57,7 +57,7 @@ func _on_connection_succeeded():
 			NetworkManager.players_info[my_id]["character_name"] = NetworkManager.my_player_name
 	NetworkManager.connection_succeeded.disconnect(_on_connection_succeeded)
 	NetworkManager.connection_failed.disconnect(_on_connection_failed)
-	get_tree().change_scene_to_file("res://ui/lobby.tscn")
+	get_tree().change_scene_to_file("res://ui/character_select.tscn")
 
 func _on_connection_failed():
 	status_label.text = "Connection failed"

@@ -41,14 +41,6 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="CharacterLabel" type="Label" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
-text = "Select Character:"
-
-[node name="CharacterContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
 [node name="ReadyButton" type="Button" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(150, 40)

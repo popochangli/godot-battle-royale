@@ -107,19 +107,65 @@ func _check_win_condition() -> void:
 	if alive.size() == 1:
 		_announce_winner(alive[0].get_multiplayer_authority())
 
+const MIN_SPAWN_DISTANCE: float = 60.0  # ระยะห่างขั้นต่ำระหว่างจุดเกิด (ป้องกันตัวซ้อนกัน)
+
+func _get_map_rect() -> Rect2:
+	var zm = get_node_or_null("ZoneManager")
+	if zm and zm.get("map_rect"):
+		return zm.map_rect
+	return Rect2(-1000, -1000, 4000, 4000)
+
+func _resolve_spawn_overlaps(peer_ids: Array, positions: Dictionary) -> Dictionary:
+	## เลื่อนจุดเกิดที่ใกล้กันให้ห่างออกไปอัตโนมัติ
+	var map_rect = _get_map_rect()
+	var margin = 32.0
+	var valid_rect = Rect2(map_rect.position + Vector2(margin, margin), map_rect.size - Vector2(margin * 2, margin * 2))
+	var result: Dictionary = {}
+
+	for pid in peer_ids:
+		var pos = positions.get(pid, Vector2(531, 182))
+		var pushed = true
+		var max_iter = 24
+		while pushed and max_iter > 0:
+			pushed = false
+			max_iter -= 1
+			for other_pid in result:
+				var other = result[other_pid]
+				var dist = pos.distance_to(other)
+				if dist < MIN_SPAWN_DISTANCE:
+					if dist < 1.0:
+						var angle = randf() * TAU
+						pos = other + Vector2(cos(angle), sin(angle)) * MIN_SPAWN_DISTANCE
+					else:
+						pos = other + (pos - other).normalized() * MIN_SPAWN_DISTANCE
+					pushed = true
+					break
+		pos.x = clamp(pos.x, valid_rect.position.x, valid_rect.end.x)
+		pos.y = clamp(pos.y, valid_rect.position.y, valid_rect.end.y)
+		result[pid] = pos
+	return result
+
 func _spawn_all_players() -> void:
 	var peers: Array = []
 	peers.append(multiplayer.get_unique_id())
 	for pid in multiplayer.get_peers():
 		peers.append(pid)
 	_total_players = peers.size()
+
+	var raw_positions: Dictionary = {}
+	for pid in peers:
+		raw_positions[pid] = GameState.get_spawn_position(pid)
+	var resolved = _resolve_spawn_overlaps(peers, raw_positions)
+
 	for peer_id in peers:
-		var spawn_pos = GameState.get_spawn_position(peer_id)
+		var spawn_pos = resolved[peer_id]
+		var pd = GameState._ensure_player_data(peer_id)
+		pd["spawn_position"] = spawn_pos
+
 		var char_path = ""
 		if NetworkManager.players_info.has(peer_id):
 			char_path = NetworkManager.players_info[peer_id]["character_path"]
 		else:
-			var pd = GameState._ensure_player_data(peer_id)
 			if pd.has("character_path"):
 				char_path = pd["character_path"]
 		var data = {"peer_id": peer_id, "spawn_pos": spawn_pos, "character_path": char_path}
