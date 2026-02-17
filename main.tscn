@@ -72,6 +72,46 @@ camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("8_w48qg"), ExtResourc
 position = Vector2(21, 1097)
 camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
 
+[node name="EnemyCamp8" parent="." unique_id=471174319 instance=ExtResource("3_1bvp3")]
+position = Vector2(3052, -223)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="EnemyCamp9" parent="." unique_id=116273967 instance=ExtResource("3_1bvp3")]
+position = Vector2(5177, 1625)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="EnemyCamp10" parent="." unique_id=613167073 instance=ExtResource("3_1bvp3")]
+position = Vector2(2871, 787)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("7_ycdy4"), ExtResource("8_w48qg"), ExtResource("6_dg77c")])
+
+[node name="EnemyCamp11" parent="." unique_id=887767972 instance=ExtResource("3_1bvp3")]
+position = Vector2(4369, 1486)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="EnemyCamp12" parent="." unique_id=802821093 instance=ExtResource("3_1bvp3")]
+position = Vector2(3048, 1416)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="EnemyCamp13" parent="." unique_id=520453737 instance=ExtResource("3_1bvp3")]
+position = Vector2(4517, -66)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="EnemyCamp14" parent="." unique_id=1051609497 instance=ExtResource("3_1bvp3")]
+position = Vector2(3659, 418)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="EnemyCamp15" parent="." unique_id=1213833933 instance=ExtResource("3_1bvp3")]
+position = Vector2(5186, 693)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="EnemyCamp16" parent="." unique_id=789046266 instance=ExtResource("3_1bvp3")]
+position = Vector2(4647, 427)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
+[node name="EnemyCamp17" parent="." unique_id=1211599421 instance=ExtResource("3_1bvp3")]
+position = Vector2(5557, 138)
+camp_configs = Array[ExtResource("5_efxa6")]([ExtResource("6_dg77c"), ExtResource("7_ycdy4"), ExtResource("8_w48qg")])
+
 [node name="ZoneManager" type="Node" parent="." unique_id=122993228 groups=["zone_manager"]]
 script = ExtResource("4_zone_mgr")
 

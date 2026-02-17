@@ -12,7 +12,6 @@ collision_layer = 3
 script = ExtResource("1_7k104")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1087135345]
-texture_filter = 0
 texture = SubResource("CanvasTexture_2mvqj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1416085300]
