@@ -59,7 +59,7 @@ func _ready():
 
 	# Set collision layer to 2 (not 1) so projectiles don't hit enemies
 	collision_layer = 2  # Enemy layer
-	collision_mask = 1   # Detect player layer
+	collision_mask = 33   # Detect player layer
 
 	# NEW: Apply stats from resource if provided
 	if enemy_stats:
