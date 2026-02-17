@@ -2,9 +2,14 @@
 
 [ext_resource type="Script" uid="uid://bsarqb1s5e53y" path="res://player/abilities/scripts/assassinate.gd" id="1_e80pt"]
 [ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_kl1fu"]
+[ext_resource type="Texture2D" uid="uid://15prvrj41aqx" path="res://assets/characters/players/heroes/sniper/assassinate.png" id="2_gmib0"]
 
 [resource]
 script = ExtResource("1_kl1fu")
+ability_id = "assassinate"
+display_name = "Assassinate"
+description = "Sniper locks onto a target enemy unit and, after a short aiming duration, fires a devastating shot that delivers an amplified attack "
+icon = ExtResource("2_gmib0")
 cooldown = 5.0
 damage = 100
 indicator_color = Color(0.64957756, 0.39624575, 0.08027025, 1)

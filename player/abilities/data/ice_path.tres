@@ -2,9 +2,14 @@
 
 [ext_resource type="Script" uid="uid://6xdclkhdrvok" path="res://player/abilities/scripts/ice_path.gd" id="1_oax3u"]
 [ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_omae4"]
+[ext_resource type="Texture2D" uid="uid://cwua6mhej52a8" path="res://assets/characters/players/heroes/Jakiro/ice_path.png" id="2_fi3wl"]
 
 [resource]
 script = ExtResource("1_omae4")
+ability_id = "ice_path"
+display_name = "Ice Path"
+description = "Creates a path of ice that stuns and damages enemies that touch it."
+icon = ExtResource("2_fi3wl")
 cooldown = 10.0
 indicator_color = Color(1.5979409e-05, 0.44448027, 0.7991649, 1)
 ability_script = ExtResource("1_oax3u")

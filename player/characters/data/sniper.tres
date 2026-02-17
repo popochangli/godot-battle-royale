@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://bm3py3t6aqsvu"]
 
+[ext_resource type="Texture2D" uid="uid://cvfr6qe5451ot" path="res://assets/characters/players/heroes/sniper/sniper.png" id="1_6mnbv"]
 [ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_7n5jh"]
 [ext_resource type="Resource" uid="uid://dfr66j2txliwf" path="res://player/abilities/data/shrapnel.tres" id="1_pna3j"]
 [ext_resource type="Resource" uid="uid://cwcx35aqcqa2s" path="res://player/abilities/data/assassinate.tres" id="3_6mnbv"]
@@ -8,6 +9,8 @@
 script = ExtResource("1_7n5jh")
 character_id = "sniper"
 display_name = "Sniper"
+description = "Picks off his enemies from afar"
+icon = ExtResource("1_6mnbv")
 max_health = 80
 speed = 310.0
 primary_ability = ExtResource("1_pna3j")

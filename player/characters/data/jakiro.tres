@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://dfrb33ucxyhq3"]
 
+[ext_resource type="Texture2D" uid="uid://dbuh41jduvem" path="res://assets/characters/players/heroes/Jakiro/jakiro.png" id="1_dhvhu"]
 [ext_resource type="Resource" uid="uid://cdr00b5hiunr7" path="res://player/abilities/data/dual_breath.tres" id="1_krgnm"]
 [ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_qqj0a"]
 [ext_resource type="Resource" uid="uid://bovvx13hxmbdq" path="res://player/abilities/data/ice_path.tres" id="3_dhvhu"]
@@ -8,6 +9,8 @@
 script = ExtResource("1_qqj0a")
 character_id = "jakiro"
 display_name = "Jakiro"
+description = "Freezes and burns enemies with magic"
+icon = ExtResource("1_dhvhu")
 max_health = 120
 speed = 310.0
 primary_ability = ExtResource("1_krgnm")
