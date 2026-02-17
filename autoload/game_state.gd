@@ -69,3 +69,7 @@ func get_bonus_projectiles(bonus_levels: Array[int]) -> int:
 
 func get_scaled_max_health(base_health: int, hp_per_level: int) -> int:
 	return base_health + hp_per_level * (current_level - 1)
+
+func get_damage_reduction() -> float:
+	# 5% damage reduction per level after level 1, capped at 20%
+	return clamp(0.05 * (current_level - 1), 0.0, 0.20)

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CampConfig" format=3 uid="uid://boe6twfe0bt4m"]
+
+[ext_resource type="Resource" uid="uid://cwn3exqleonok" path="res://enemy/skills/data/fireball_skill.tres" id="1_hxpg5"]
+[ext_resource type="Script" uid="uid://ctls3mq27skmi" path="res://enemy/resources/camp_config.gd" id="1_u25ca"]
+[ext_resource type="Resource" uid="uid://cxf3c02imkqja" path="res://enemy/stats/mage_leader_stats.tres" id="2_fjcia"]
+[ext_resource type="Resource" uid="uid://bmahmeujkmf46" path="res://enemy/stats/mage_minion_stats.tres" id="3_e7hf6"]
+
+[resource]
+script = ExtResource("1_u25ca")
+camp_name = "Mage Camp"
+leader_skill = ExtResource("1_hxpg5")
+leader_stats = ExtResource("2_fjcia")
+minion_stats = ExtResource("3_e7hf6")
+camp_color = Color(0.79095525, 0.27078128, 0.8210174, 1)
+difficulty_tier = 3
+metadata/_custom_type_script = "uid://ctls3mq27skmi"

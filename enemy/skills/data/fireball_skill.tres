@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemySkillData" format=3 uid="uid://cwn3exqleonok"]
+
+[ext_resource type="Script" uid="uid://clomcn2f2eqf3" path="res://enemy/resources/enemy_skill_data.gd" id="1_o6qjk"]
+[ext_resource type="Script" uid="uid://d31a3537x5mdk" path="res://enemy/skills/fireball.gd" id="2_hvy4e"]
+
+[resource]
+script = ExtResource("1_o6qjk")
+skill_id = "fireball"
+skill_name = "Fireball"
+cooldown = 10.0
+damage = 30
+effect_color = Color(0.7714162, 0.4314889, 0.32135126, 1)
+skill_script = ExtResource("2_hvy4e")
+range = 300.0
+metadata/_custom_type_script = "uid://clomcn2f2eqf3"

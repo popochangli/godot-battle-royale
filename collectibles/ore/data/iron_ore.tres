@@ -1,11 +1,8 @@
-[gd_resource type="Resource" script_class="OreData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="OreData" format=3 uid="uid://cende06112tq0"]
 
-[ext_resource type="Script" path="res://collectibles/ore/ore_data.gd" id="1_ore_data"]
+[ext_resource type="Script" uid="uid://kejte4qrp5tt" path="res://collectibles/ore/ore_data.gd" id="1_ore_data"]
 
 [resource]
 script = ExtResource("1_ore_data")
 ore_id = "iron_ore"
 display_name = "Iron Ore"
-max_health = 50
-xp_value = 15
-ore_color = Color(0.6, 0.6, 0.7, 1)

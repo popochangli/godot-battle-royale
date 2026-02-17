@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cegrndslam001"]
+
+[ext_resource type="Script" path="res://effects/enemy/enemy_ground_slam.gd" id="1_script"]
+
+[node name="EnemyGroundSlam" type="Area2D"]
+script = ExtResource("1_script")
+damage = 20
+radius = 100.0
+expand_speed = 120.0

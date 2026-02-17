@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemySkillData" format=3 uid="uid://b5hco0d8jq87e"]
+
+[ext_resource type="Script" uid="uid://clomcn2f2eqf3" path="res://enemy/resources/enemy_skill_data.gd" id="1_y11o1"]
+[ext_resource type="Script" uid="uid://bsa1c4u7vj6el" path="res://enemy/skills/poison_arrow.gd" id="2_4g5bg"]
+
+[resource]
+script = ExtResource("1_y11o1")
+skill_id = "poison_arrow"
+skill_name = "Poison Arrow"
+cooldown = 6.0
+damage = 5
+effect_color = Color(0, 0.634066, 0.23234558, 1)
+skill_script = ExtResource("2_4g5bg")
+range = 250.0
+metadata/_custom_type_script = "uid://clomcn2f2eqf3"

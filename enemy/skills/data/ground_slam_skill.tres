@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemySkillData" format=3 uid="uid://brhyj4j63wl6"]
+
+[ext_resource type="Script" uid="uid://clomcn2f2eqf3" path="res://enemy/resources/enemy_skill_data.gd" id="1_6lght"]
+[ext_resource type="Script" uid="uid://buycgdlfujin3" path="res://enemy/skills/ground_slam.gd" id="2_ggiox"]
+
+[resource]
+script = ExtResource("1_6lght")
+skill_id = "ground_slam"
+skill_name = "Ground Slam"
+damage = 25
+effect_color = Color(0.20535305, 0.18246141, 0.16641548, 1)
+skill_script = ExtResource("2_ggiox")
+radius = 250.0
+range = 150.0
+metadata/_custom_type_script = "uid://clomcn2f2eqf3"

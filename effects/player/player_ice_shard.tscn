@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpiceshard001"]
+
+[ext_resource type="Script" path="res://effects/player/player_ice_shard.gd" id="1_script"]
+
+[node name="PlayerIceShard" type="Area2D"]
+script = ExtResource("1_script")
+speed = 500.0
+max_lifetime = 5.0
+damage = 20
