@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://i7rhrp2a85iw"]
 
+[ext_resource type="Texture2D" uid="uid://b6s4bmvfj4nf1" path="res://assets/characters/players/heroes/crystal maiden/crystal_maiden.png" id="1_1erk0"]
 [ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_character"]
 [ext_resource type="Resource" uid="uid://c1tvljg6k5vuo" path="res://player/abilities/data/freezing_field.tres" id="2_primary"]
 [ext_resource type="Resource" uid="uid://ro3kp5jx1nsp" path="res://player/abilities/data/ice_blast.tres" id="3_secondary"]
@@ -8,6 +9,8 @@
 script = ExtResource("1_character")
 character_id = "crystal_maiden"
 display_name = "Crystal Maiden"
+description = "Unleashes a high damage blizzard upon her foes"
+icon = ExtResource("1_1erk0")
 max_health = 80
 speed = 280.0
 primary_ability = ExtResource("3_secondary")

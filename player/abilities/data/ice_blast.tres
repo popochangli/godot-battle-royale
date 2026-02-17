@@ -1,12 +1,15 @@
 [gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://ro3kp5jx1nsp"]
 
 [ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_ability"]
+[ext_resource type="Texture2D" uid="uid://dpgm2oqv8bie2" path="res://assets/characters/players/heroes/crystal maiden/crystal_nova.png" id="2_kp2q6"]
 [ext_resource type="Script" uid="uid://db17scurp36ji" path="res://player/abilities/scripts/ice_blast.gd" id="2_script"]
 
 [resource]
 script = ExtResource("1_ability")
 ability_id = "ice_blast"
 display_name = "Ice Blast"
+description = "A burst of damaging frost slows enemy movement in the targeted area."
+icon = ExtResource("2_kp2q6")
 damage = 15
 indicator_color = Color(0.6, 0.9, 1, 1)
 ability_script = ExtResource("2_script")
