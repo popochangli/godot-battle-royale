@@ -23,6 +23,7 @@ const EFFECT_SCENES = [
 
 var _total_players: int = 0
 var _death_count: int = 0
+var _reported_deaths: Dictionary = {}  # peer_id -> true, ป้องกันนับซ้ำเมื่อ die() ถูกเรียกซ้ำ
 @onready var effect_spawner = $EffectsContainer/EffectSpawner
 @onready var rpc_effects_container = $RPCEffectsContainer
 @onready var enemy_spawner = $EnemiesContainer/EnemySpawner
@@ -67,22 +68,25 @@ func _on_server_disconnected() -> void:
 func _on_player_died(dead_peer_id: int) -> void:
 	if not multiplayer.is_server():
 		return
+	if _reported_deaths.get(dead_peer_id, false):
+		return  # นับเฉพาะครั้งแรก ป้องกัน die() ถูกเรียกซ้ำจาก poison/zone/etc
+	_reported_deaths[dead_peer_id] = true
 	_death_count += 1
 	var rank = _total_players - _death_count + 1
+	var rank_text = "Rank: #%d / %d" % [rank, _total_players]
 	var my_id = multiplayer.get_unique_id()
 	if dead_peer_id == my_id:
-		_display_death_overlay(rank, _total_players)
+		_display_death_overlay(rank_text)
 	else:
-		_show_death_rank.rpc_id(dead_peer_id, rank, _total_players)
+		_show_death_rank.rpc_id(dead_peer_id, rank_text)
 
 @rpc("authority", "reliable")
-func _show_death_rank(rank: int, total_players: int) -> void:
-	_display_death_overlay(rank, total_players)
+func _show_death_rank(rank_text: String) -> void:
+	_display_death_overlay(rank_text)
 
-func _display_death_overlay(rank: int, total_players: int) -> void:
+func _display_death_overlay(rank_text: String) -> void:
 	var overlay = preload("res://ui/death_overlay.tscn").instantiate()
-	overlay.rank = rank
-	overlay.total_players = total_players
+	overlay.rank_text = rank_text
 	add_child(overlay)
 
 func _announce_winner(winner_peer_id: int) -> void:

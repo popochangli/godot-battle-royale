@@ -1,7 +1,6 @@
 extends CanvasLayer
 
-var rank: int = 1
-var total_players: int = 1
+var rank_text: String = "Rank: #1 / 1"
 
 @onready var title_label: Label = $CenterContainer/VBoxContainer/TitleLabel
 @onready var rank_label: Label = $CenterContainer/VBoxContainer/RankLabel
@@ -9,7 +8,7 @@ var total_players: int = 1
 
 func _ready():
 	title_label.text = "You were eliminated"
-	rank_label.text = "Rank: #%d / %d" % [rank, total_players]
+	rank_label.text = rank_text
 	menu_button.pressed.connect(_on_menu_pressed)
 
 func _on_menu_pressed():

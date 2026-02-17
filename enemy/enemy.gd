@@ -114,6 +114,8 @@ func _ready():
 
 func _physics_process(delta):
 	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		# Client: sync health bar from replicated health (take_damage never runs on client)
+		update_health_bar()
 		return
 
 	if attack_timer > 0:

@@ -329,7 +329,7 @@ func die():
 		_set_dead_state()
 		var main_node = get_tree().current_scene
 		if main_node and main_node.has_method("_display_death_overlay"):
-			main_node._display_death_overlay(1, 1)
+			main_node._display_death_overlay("Rank: #1 / 1")
 
 @rpc("any_peer", "reliable")
 func _broadcast_death():
