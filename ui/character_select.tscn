@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cnblv4ymo0ycg" path="res://ui/character_select.gd" id="1_script"]
 
-[node name="CharacterSelect" type="Control" unique_id=1880267488]
+[node name="CharacterSelect" type="Control" unique_id=609128951]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1913966929]
+[node name="Background" type="ColorRect" parent="." unique_id=1910683418]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,23 +20,143 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.1, 0.15, 1)
 
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1927543558]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=313203844]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 60
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 60
+theme_override_constants/margin_bottom = 30
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=618950505]
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer" unique_id=1882833381]
 layout_mode = 2
-theme_override_constants/separation = 30
+theme_override_constants/separation = 20
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1313000247]
+[node name="Title" type="Label" parent="MarginContainer/MainVBox" unique_id=1997719983]
 layout_mode = 2
-text = "SELECT CHARACTER"
+text = "SELECT YOUR HERO"
 horizontal_alignment = 1
 
-[node name="ButtonContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=715089998]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/MainVBox" unique_id=569536983]
 layout_mode = 2
+
+[node name="ContentHBox" type="HBoxContainer" parent="MarginContainer/MainVBox" unique_id=429814199]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 30
+
+[node name="LeftVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox" unique_id=281974440]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.2
 theme_override_constants/separation = 10
+alignment = 1
+
+[node name="CarouselRow" type="HBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox" unique_id=575029947]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="BtnPrev" type="Button" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox/CarouselRow" unique_id=1903009484]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "<"
+
+[node name="CharacterDisplay" type="TextureRect" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox/CarouselRow" unique_id=1310900882]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BtnNext" type="Button" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox/CarouselRow" unique_id=407247873]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = ">"
+
+[node name="NameLabel" type="Label" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox" unique_id=1924936122]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="MarginContainer/MainVBox/ContentHBox/LeftVBox" unique_id=1367943250]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/MainVBox/ContentHBox" unique_id=1183017816]
+layout_mode = 2
+
+[node name="RightVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox" unique_id=1389058574]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 15
+
+[node name="BioTitle" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox" unique_id=170407450]
+layout_mode = 2
+text = "DESCRIPTION"
+
+[node name="DescLabel" type="RichTextLabel" parent="MarginContainer/MainVBox/ContentHBox/RightVBox" unique_id=154288841]
+layout_mode = 2
+fit_content = true
+
+[node name="AbilitiesTitle" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox" unique_id=680060712]
+layout_mode = 2
+text = "ABILITIES"
+
+[node name="AbilitiesHBox" type="HBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/RightVBox" unique_id=2039544505]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Ability1" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox" unique_id=542180296]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability1" unique_id=432876200]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Name" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability1" unique_id=1812441229]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Desc" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability1" unique_id=1332644974]
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="Ability2" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox" unique_id=814466104]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability2" unique_id=80080663]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Name" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability2" unique_id=678621657]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Desc" type="Label" parent="MarginContainer/MainVBox/ContentHBox/RightVBox/AbilitiesHBox/Ability2" unique_id=1501556247]
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="PlayButton" type="Button" parent="MarginContainer/MainVBox" unique_id=290354247]
+custom_minimum_size = Vector2(280, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "PLAY"

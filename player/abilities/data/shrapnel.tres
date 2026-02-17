@@ -2,9 +2,14 @@
 
 [ext_resource type="Script" uid="uid://7lk13fijost4" path="res://player/abilities/scripts/shrapnel.gd" id="1_5qxgf"]
 [ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="2_87ojm"]
+[ext_resource type="Texture2D" uid="uid://b5v8fbbhu1fdr" path="res://assets/characters/players/heroes/sniper/shrapnel.png" id="2_psgv2"]
 
 [resource]
 script = ExtResource("2_87ojm")
+ability_id = "shrapnel"
+display_name = "Shrapnel"
+description = "Launch a ball of shrapnel that showers the target area in explosive pellets"
+icon = ExtResource("2_psgv2")
 damage = 20
 indicator_color = Color(0.9999998, 0.52732086, 0.24884051, 1)
 ability_script = ExtResource("1_5qxgf")

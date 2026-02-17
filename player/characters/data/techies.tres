@@ -1,15 +1,28 @@
 [gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://b0wh6ncbib0y1"]
 
 [ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_character"]
+[ext_resource type="Texture2D" uid="uid://b8tygiuajnohw" path="res://assets/characters/players/heroes/techies/techies.png" id="1_veghq"]
 [ext_resource type="Resource" uid="uid://dk3efr1ne00y1" path="res://player/abilities/data/bomb.tres" id="2_primary"]
 [ext_resource type="Resource" uid="uid://bn2p4q5c3s81s" path="res://player/abilities/data/proximity_mine.tres" id="3_secondary"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/techies/south.png" id="dir_s"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/techies/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/techies/east.png" id="dir_e"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/techies/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/techies/north.png" id="dir_n"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/techies/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/techies/west.png" id="dir_w"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/techies/south-west.png" id="dir_sw"]
 
 [resource]
 script = ExtResource("1_character")
 character_id = "techies"
 display_name = "Techies"
+description = "Surprises enemies with invisible landmines and explosive attacks"
+icon = ExtResource("1_veghq")
 max_health = 90
 speed = 200.0
 primary_ability = ExtResource("2_primary")
 secondary_ability = ExtResource("3_secondary")
 hp_per_level = 10
+sprite_scale = 1.0
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])

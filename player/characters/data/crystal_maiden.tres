@@ -1,15 +1,28 @@
 [gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://i7rhrp2a85iw"]
 
+[ext_resource type="Texture2D" uid="uid://b6s4bmvfj4nf1" path="res://assets/characters/players/heroes/crystal maiden/crystal_maiden.png" id="1_1erk0"]
 [ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_character"]
 [ext_resource type="Resource" uid="uid://c1tvljg6k5vuo" path="res://player/abilities/data/freezing_field.tres" id="2_primary"]
 [ext_resource type="Resource" uid="uid://ro3kp5jx1nsp" path="res://player/abilities/data/ice_blast.tres" id="3_secondary"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/crystal maiden/south.png" id="dir_s"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/crystal maiden/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/crystal maiden/east.png" id="dir_e"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/crystal maiden/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/crystal maiden/north.png" id="dir_n"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/crystal maiden/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/crystal maiden/west.png" id="dir_w"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/crystal maiden/south-west.png" id="dir_sw"]
 
 [resource]
 script = ExtResource("1_character")
 character_id = "crystal_maiden"
 display_name = "Crystal Maiden"
+description = "Unleashes a high damage blizzard upon her foes"
+icon = ExtResource("1_1erk0")
 max_health = 80
 speed = 280.0
 primary_ability = ExtResource("3_secondary")
 secondary_ability = ExtResource("2_primary")
 hp_per_level = 6
+sprite_scale = 1.0
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])

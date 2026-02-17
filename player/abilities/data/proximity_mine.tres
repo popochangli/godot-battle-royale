@@ -1,12 +1,15 @@
 [gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://bn2p4q5c3s81s"]
 
 [ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_ability"]
+[ext_resource type="Texture2D" uid="uid://2ixfq164cgpn" path="res://assets/characters/players/heroes/techies/land_mines.png" id="2_12clr"]
 [ext_resource type="Script" uid="uid://bva6p2kawkdbe" path="res://player/abilities/scripts/proximity_mine.gd" id="2_script"]
 
 [resource]
 script = ExtResource("1_ability")
 ability_id = "proximity_mine"
 display_name = "Mine"
+description = "Plant an invisible mine.Mines detonate if an enemy is standing within the active AoE."
+icon = ExtResource("2_12clr")
 cooldown = 15.0
 damage = 60
 indicator_color = Color(0.8, 0.2, 0.2, 1)

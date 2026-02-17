@@ -1,12 +1,15 @@
 [gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://c1tvljg6k5vuo"]
 
 [ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_ability"]
+[ext_resource type="Texture2D" uid="uid://gnmyy6e35nkt" path="res://assets/characters/players/heroes/crystal maiden/freezing_field.png" id="2_jle8y"]
 [ext_resource type="Script" uid="uid://uhhs42e5w3n" path="res://player/abilities/scripts/freezing_field.gd" id="2_script"]
 
 [resource]
 script = ExtResource("1_ability")
 ability_id = "freezing_field"
-display_name = "Freeze"
+display_name = "Freezing Field"
+description = "Surrounds Crystal Maiden with 100 random icy explosions that slow enemies and deal massive damage."
+icon = ExtResource("2_jle8y")
 cooldown = 10.0
 damage = 0
 indicator_color = Color(0.4, 0.8, 1, 1)

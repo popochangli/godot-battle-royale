@@ -2,9 +2,14 @@
 
 [ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_2fny7"]
 [ext_resource type="Script" uid="uid://bntes0elpepqx" path="res://player/abilities/scripts/dual_breath.gd" id="1_p4bko"]
+[ext_resource type="Texture2D" uid="uid://dnpriv75i3wtf" path="res://assets/characters/players/heroes/Jakiro/dual_breath.png" id="2_8ud5n"]
 
 [resource]
 script = ExtResource("1_2fny7")
+ability_id = "dual_breath"
+display_name = "Dual Breath"
+description = "An icy blast followed by a wave of fire launches out in a path in front of Jakiro. The ice slows enemies, while the fire delivers damage over time."
+icon = ExtResource("2_8ud5n")
 damage = 6
 indicator_color = Color(0.9999998, 0.012074706, 0.006631455, 1)
 ability_script = ExtResource("1_p4bko")
