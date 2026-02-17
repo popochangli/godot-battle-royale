@@ -4,6 +4,14 @@
 [ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_7n5jh"]
 [ext_resource type="Resource" uid="uid://dfr66j2txliwf" path="res://player/abilities/data/shrapnel.tres" id="1_pna3j"]
 [ext_resource type="Resource" uid="uid://cwcx35aqcqa2s" path="res://player/abilities/data/assassinate.tres" id="3_6mnbv"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/sniper/south.png" id="dir_s"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/sniper/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/sniper/east.png" id="dir_e"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/sniper/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/sniper/north.png" id="dir_n"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/sniper/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/sniper/west.png" id="dir_w"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/sniper/south-west.png" id="dir_sw"]
 
 [resource]
 script = ExtResource("1_7n5jh")
@@ -15,4 +23,6 @@ max_health = 80
 speed = 310.0
 primary_ability = ExtResource("1_pna3j")
 secondary_ability = ExtResource("3_6mnbv")
+sprite_scale = 1.0
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])
 metadata/_custom_type_script = "uid://7ga18kcriays"

@@ -4,6 +4,14 @@
 [ext_resource type="Resource" uid="uid://cdr00b5hiunr7" path="res://player/abilities/data/dual_breath.tres" id="1_krgnm"]
 [ext_resource type="Script" uid="uid://7ga18kcriays" path="res://player/characters/character_data.gd" id="1_qqj0a"]
 [ext_resource type="Resource" uid="uid://bovvx13hxmbdq" path="res://player/abilities/data/ice_path.tres" id="3_dhvhu"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/jakiro/south.png" id="dir_s"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/jakiro/south-east.png" id="dir_se"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/jakiro/east.png" id="dir_e"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/jakiro/north-east.png" id="dir_ne"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/jakiro/north.png" id="dir_n"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/jakiro/north-west.png" id="dir_nw"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/jakiro/west.png" id="dir_w"]
+[ext_resource type="Texture2D" path="res://assets/characters/players/heroes/jakiro/south-west.png" id="dir_sw"]
 
 [resource]
 script = ExtResource("1_qqj0a")
@@ -15,4 +23,6 @@ max_health = 120
 speed = 310.0
 primary_ability = ExtResource("1_krgnm")
 secondary_ability = ExtResource("3_dhvhu")
+sprite_scale = 1.0
+direction_sprites = Array[Texture2D]([ExtResource("dir_s"), ExtResource("dir_se"), ExtResource("dir_e"), ExtResource("dir_ne"), ExtResource("dir_n"), ExtResource("dir_nw"), ExtResource("dir_w"), ExtResource("dir_sw")])
 metadata/_custom_type_script = "uid://7ga18kcriays"

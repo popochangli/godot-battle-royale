@@ -10,6 +10,7 @@ var aim_direction: Vector2 = Vector2.RIGHT
 var primary_timer: float = 0.0
 var secondary_timer: float = 0.0
 var regen_timer: float = 0.0
+var has_direction_sprites: bool = false
 
 
 @onready var health_bar = $CooldownUI/HealthBar
@@ -30,6 +31,13 @@ func _ready():
 
 	if character_data:
 		speed = character_data.speed
+
+		# Load direction sprites if available
+		if character_data.direction_sprites.size() == 8:
+			has_direction_sprites = true
+			$Sprite2D.texture = character_data.direction_sprites[0]  # south default
+			$Sprite2D.scale = Vector2(character_data.sprite_scale, character_data.sprite_scale)
+			$Sprite2D.rotation = 0
 
 		if primary_label and character_data.primary_ability:
 			primary_label.text = character_data.primary_ability.display_name
@@ -114,7 +122,7 @@ func _physics_process(delta):
 		secondary_indicator.cooldown_current = secondary_timer
 
 	var mouse_pos = get_global_mouse_position()
-	$Sprite2D.look_at(mouse_pos)
+	_update_facing(mouse_pos)
 	aim_direction = (mouse_pos - global_position).normalized()
 
 	var direction = Vector2.ZERO
@@ -189,3 +197,19 @@ func update_health_bar():
 	if health_bar:
 		health_bar.value = health
 		health_bar.max_value = max_health
+
+# Convert mouse aim to 8-direction index and swap sprite texture
+func _update_facing(target_pos: Vector2) -> void:
+	if has_direction_sprites:
+		var dir = (target_pos - global_position).normalized()
+		var angle = dir.angle()  # radians, 0 = right(east), PI/2 = down(south)
+		# Map angle to 8 directions. Subtract PI/2 to shift south to index 0.
+		var idx = wrapi(roundi((angle - PI / 2) / (PI / 4)), 0, 8)
+		# idx: 0=S, 1=SW, 2=W, 3=NW, 4=N, 5=NE, 6=E, 7=SE
+		# Array order: S(0), SE(1), E(2), NE(3), N(4), NW(5), W(6), SW(7)
+		var remap = [0, 7, 6, 5, 4, 3, 2, 1]
+		var sprite_idx = remap[idx]
+		$Sprite2D.texture = character_data.direction_sprites[sprite_idx]
+		$Sprite2D.rotation = 0
+	else:
+		$Sprite2D.look_at(target_pos)
