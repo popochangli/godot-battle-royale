@@ -1,10 +1,15 @@
 [gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://o8uyfevcgn3l"]
 
 [ext_resource type="Script" uid="uid://cuyhc4ww30jbe" path="res://player/abilities/ability_data.gd" id="1_h0dql"]
-[ext_resource type="Script" uid="uid://ddhul34n3i872" path="res://player/abilities/scripts/spectral_dagger.gd" id="1_jwuvl"]
+[ext_resource type="Script" path="res://player/abilities/scripts/spectral_dagger.gd" id="1_jwuvl"]
+[ext_resource type="Texture2D" uid="uid://b3qaixt7dsc67" path="res://assets/characters/players/heroes/spectre/spectral_dagger.png" id="2_ctg8r"]
 
 [resource]
 script = ExtResource("1_h0dql")
+ability_id = "spectral_dagger"
+display_name = "Spectral Dagger"
+description = "Spectre flings a dagger to draw a Shadow Path, dealing damage to any enemies along the trail."
+icon = ExtResource("2_ctg8r")
 damage = 40
 indicator_color = Color(0.67698354, 0.0003808105, 0.6860194, 1)
 ability_script = ExtResource("1_jwuvl")
