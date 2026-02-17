@@ -286,6 +286,13 @@ func _apply_damage(amount: int):
 	health = max(0, health - amount)
 	update_health_bar()
 
+@rpc("any_peer", "reliable")
+func _apply_heal(amount: int):
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	health = min(max_health, health + amount)
+	update_health_bar()
+
 func take_zone_damage(amount: float):
 	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
 		return
@@ -303,10 +310,19 @@ func take_zone_damage(amount: float):
 
 
 func heal(amount):
-	health += amount
+	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		return
+	var heal_amount = max(amount, 0)
+	if heal_amount <= 0:
+		return
+	health += heal_amount
 	if health > max_health:
 		health = max_health
 	update_health_bar()
+	if multiplayer.multiplayer_peer != null:
+		var authority = get_multiplayer_authority()
+		if authority != 1:
+			_apply_heal.rpc_id(authority, heal_amount)
 
 func _set_dead_state():
 	visible = false

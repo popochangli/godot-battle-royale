@@ -38,6 +38,7 @@ var phase_config: Array = [
 ]
 
 var accumulated_damage: Dictionary = {}
+var _last_synced_phase: int = -1
 
 func _ready():
 	_calculate_map_bounds()
@@ -45,6 +46,7 @@ func _ready():
 	current_zone_radius = map_diagonal / 2.0
 	_prepare_next_zone()
 	phase_started.emit(0)
+	_last_synced_phase = current_phase
 
 	if multiplayer.multiplayer_peer != null:
 		var sync = MultiplayerSynchronizer.new()
@@ -95,6 +97,9 @@ func _find_tilemaps(node: Node, result: Array):
 
 func _physics_process(delta):
 	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
+		if current_phase != _last_synced_phase:
+			_last_synced_phase = current_phase
+			phase_started.emit(current_phase)
 		var time_remaining = _get_time_remaining()
 		timer_updated.emit(time_remaining, game_elapsed_time)
 		return
@@ -138,6 +143,7 @@ func _process_shrinking(delta):
 		current_zone_radius = next_zone_radius
 		is_shrinking = false
 		current_phase += 1
+		_last_synced_phase = current_phase
 		phase_elapsed_time = 0.0
 		next_zone_visible = false
 		shrink_completed.emit()

@@ -128,8 +128,7 @@ func _physics_process(delta):
 	_process_slow_timers(delta)
 	_process_burn_timers(delta)
 
-	if player == null:
-		player = _find_nearest_player()
+	player = _find_nearest_player()
 
 	# Try to use skill BEFORE movement so CASTING blocks movement this frame
 	# Don't cast when frozen
@@ -255,6 +254,8 @@ func _find_nearest_player() -> Node2D:
 	var nearest = null
 	var min_dist = INF
 	for p in get_tree().get_nodes_in_group("player"):
+		if p.is_in_group("player_illusion"):
+			continue
 		if p.get("health") and p.health <= 0:
 			continue
 		var d = global_position.distance_to(p.global_position)

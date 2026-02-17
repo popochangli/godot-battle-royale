@@ -19,6 +19,7 @@ func _find_zone_manager():
 	if zone_manager:
 		zone_manager.timer_updated.connect(_on_timer_updated)
 		zone_manager.phase_started.connect(_on_phase_started)
+		_on_phase_started(zone_manager.get_current_phase() if zone_manager.has_method("get_current_phase") else 0)
 
 func _search_for_zone_manager(node: Node):
 	if zone_manager != null:

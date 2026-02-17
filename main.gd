@@ -36,8 +36,11 @@ func _ready():
 	if multiplayer.multiplayer_peer != null:
 		player_spawner.spawn_function = _spawn_player
 		enemy_spawner.spawn_function = _spawn_enemy
+		collectible_spawner.spawn_function = _spawn_collectible
 		enemy_spawner.add_spawnable_scene("res://enemy/enemy.tscn")
 		if multiplayer.is_server():
+			# Delay spawn so clients have time to load Main scene before spawn packets arrive
+			await get_tree().create_timer(0.15).timeout
 			_spawn_all_players()
 			_trigger_enemy_camp_spawns()
 		NetworkManager.player_disconnected.connect(_on_player_disconnected)
@@ -217,6 +220,27 @@ func _spawn_enemy(data: Variant) -> Node:
 			enemy.leader_skill = null
 	enemy.set_camp(null, camp_center, patrol_radius, leash_range, aggro_timeout)
 	return enemy
+
+func _spawn_collectible(data: Variant) -> Node:
+	var dict = data as Dictionary
+	var scene_path = dict.get("scene", "")
+	var pos = dict.get("pos", Vector2.ZERO)
+	if scene_path.is_empty() or not ResourceLoader.exists(scene_path):
+		return Node.new()
+
+	var scene = load(scene_path) as PackedScene
+	var collectible = scene.instantiate()
+	collectible.global_position = pos
+
+	var rune_data_path = dict.get("rune_data_path", "")
+	if not rune_data_path.is_empty() and ResourceLoader.exists(rune_data_path):
+		collectible.set("rune_data", load(rune_data_path))
+
+	var ore_data_path = dict.get("ore_data_path", "")
+	if not ore_data_path.is_empty() and ResourceLoader.exists(ore_data_path):
+		collectible.set("ore_data", load(ore_data_path))
+
+	return collectible
 
 var _effect_spawn_id: int = 0
 

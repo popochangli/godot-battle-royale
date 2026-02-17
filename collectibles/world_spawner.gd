@@ -13,9 +13,13 @@ var iron_ore_data = preload("res://collectibles/ore/data/iron_ore.tres")
 var rune_timer: float = 0.0
 var ore_timer: float = 0.0
 var zone_manager: Node = null
+var collectible_spawner: MultiplayerSpawner = null
 
 func _ready():
 	zone_manager = get_tree().get_first_node_in_group("zone_manager")
+	var main = get_tree().current_scene
+	if main:
+		collectible_spawner = main.get_node_or_null("CollectiblesContainer/CollectibleSpawner") as MultiplayerSpawner
 
 func _physics_process(delta):
 	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
@@ -43,16 +47,23 @@ func _try_spawn_rune():
 		return
 
 	var spawn_pos = _get_random_zone_position()
-	if spawn_pos == Vector2.ZERO:
+
+	if collectible_spawner:
+		collectible_spawner.spawn({
+			"scene": rune_scene.resource_path,
+			"pos": spawn_pos,
+			"rune_data_path": health_rune_data.resource_path,
+		})
 		return
 
+	# Fallback for non-network contexts.
 	var rune = rune_scene.instantiate()
 	rune.rune_data = health_rune_data
 	rune.global_position = spawn_pos
 	var container = get_tree().get_first_node_in_group("collectibles_container")
 	if container:
 		container.add_child(rune, true)
-	else:
+	elif get_parent():
 		get_parent().add_child(rune, true)
 
 func _try_spawn_ore():
@@ -61,16 +72,23 @@ func _try_spawn_ore():
 		return
 
 	var spawn_pos = _get_random_zone_position()
-	if spawn_pos == Vector2.ZERO:
+
+	if collectible_spawner:
+		collectible_spawner.spawn({
+			"scene": ore_scene.resource_path,
+			"pos": spawn_pos,
+			"ore_data_path": iron_ore_data.resource_path,
+		})
 		return
 
+	# Fallback for non-network contexts.
 	var ore = ore_scene.instantiate()
 	ore.ore_data = iron_ore_data
 	ore.global_position = spawn_pos
 	var container = get_tree().get_first_node_in_group("collectibles_container")
 	if container:
 		container.add_child(ore, true)
-	else:
+	elif get_parent():
 		get_parent().add_child(ore, true)
 
 func _get_random_zone_position() -> Vector2:

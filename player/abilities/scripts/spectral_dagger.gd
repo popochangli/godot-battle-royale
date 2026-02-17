@@ -11,7 +11,7 @@ static func execute(caster: Node2D, data: AbilityData, mouse_pos: Vector2 = Vect
 	area.monitorable = false
 	area.monitoring = true
 	area.collision_layer = 0
-	area.collision_mask = 2
+	area.collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 
 	var collision = CollisionShape2D.new()
 	var shape = RectangleShape2D.new()
@@ -39,7 +39,7 @@ static func execute(caster: Node2D, data: AbilityData, mouse_pos: Vector2 = Vect
 	else:
 		caster.get_parent().add_child(area, true)
 
-	var mp = caster.get_tree().multiplayer
+	var mp = caster.multiplayer
 	if mp.multiplayer_peer != null and caster.has_method("_broadcast_spectral_visual"):
 		caster._broadcast_spectral_visual.rpc(caster.global_position, direction.angle(), range_dist)
 

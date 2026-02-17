@@ -17,7 +17,7 @@ shape = SubResource("CircleShape2D_1")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=730903439]
 modulate = Color(6.6420434e-06, 0.9919017, 0.5740686, 1)
-scale = Vector2(32, 32)
+scale = Vector2(1, 1)
 texture = SubResource("CanvasTexture_06fdt")
 metadata/_aseprite_wizard_interface_config_ = {
 "layer_section": false,
