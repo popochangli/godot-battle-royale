@@ -20,6 +20,9 @@ const EFFECT_SCENES = [
 
 @onready var players_container = $PlayersContainer
 @onready var player_spawner = $PlayersContainer/PlayerSpawner
+
+var _total_players: int = 0
+var _death_count: int = 0
 @onready var effect_spawner = $EffectsContainer/EffectSpawner
 @onready var rpc_effects_container = $RPCEffectsContainer
 @onready var enemy_spawner = $EnemiesContainer/EnemySpawner
@@ -61,14 +64,41 @@ func _on_server_disconnected() -> void:
 	NetworkManager.reset()
 	get_tree().change_scene_to_file("res://ui/main_menu.tscn")
 
-func _announce_winner(winner_peer_id: int) -> void:
-	_game_over.rpc(winner_peer_id)
+func _on_player_died(dead_peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	_death_count += 1
+	var rank = _total_players - _death_count + 1
+	var my_id = multiplayer.get_unique_id()
+	if dead_peer_id == my_id:
+		_display_death_overlay(rank, _total_players)
+	else:
+		_show_death_rank.rpc_id(dead_peer_id, rank, _total_players)
 
 @rpc("authority", "reliable")
-func _game_over(winner_peer_id: int) -> void:
-	var overlay = preload("res://ui/game_over.tscn").instantiate()
-	overlay.winner_peer_id = winner_peer_id
+func _show_death_rank(rank: int, total_players: int) -> void:
+	_display_death_overlay(rank, total_players)
+
+func _display_death_overlay(rank: int, total_players: int) -> void:
+	var overlay = preload("res://ui/death_overlay.tscn").instantiate()
+	overlay.rank = rank
+	overlay.total_players = total_players
 	add_child(overlay)
+
+func _announce_winner(winner_peer_id: int) -> void:
+	var my_id = multiplayer.get_unique_id()
+	if winner_peer_id == my_id:
+		_display_winner_overlay()
+	else:
+		_game_over.rpc_id(winner_peer_id, winner_peer_id)
+
+func _display_winner_overlay() -> void:
+	var overlay = preload("res://ui/game_over.tscn").instantiate()
+	add_child(overlay)
+
+@rpc("authority", "reliable")
+func _game_over(_winner_peer_id: int) -> void:
+	_display_winner_overlay()
 
 func _check_win_condition() -> void:
 	if not multiplayer.is_server():
@@ -82,6 +112,7 @@ func _spawn_all_players() -> void:
 	peers.append(multiplayer.get_unique_id())
 	for pid in multiplayer.get_peers():
 		peers.append(pid)
+	_total_players = peers.size()
 	for peer_id in peers:
 		var spawn_pos = GameState.get_spawn_position(peer_id)
 		var char_path = ""
@@ -197,6 +228,7 @@ func _trigger_enemy_camp_spawns() -> void:
 			camp._spawn_enemies()
 
 func _spawn_single_player() -> void:
+	_total_players = 1
 	var spawn_pos = GameState.get_spawn_position(1)
 	var player = PLAYER_SCENE.instantiate()
 	player.position = spawn_pos

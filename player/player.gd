@@ -326,12 +326,19 @@ func die():
 		_broadcast_death.rpc()
 		_set_dead_state()
 		var main_node = get_tree().current_scene
-		if main_node and main_node.has_method("_announce_winner"):
-			var alive = get_tree().get_nodes_in_group("player").filter(func(p): return p.health > 0 and not p.is_in_group("player_illusion"))
-			if alive.size() == 1:
-				main_node._announce_winner(alive[0].peer_id)
+		if main_node:
+			if main_node.has_method("_on_player_died"):
+				main_node._on_player_died(peer_id)
+			if main_node.has_method("_announce_winner"):
+				var alive = get_tree().get_nodes_in_group("player").filter(func(p): return p.health > 0 and not p.is_in_group("player_illusion"))
+				if alive.size() == 1:
+					main_node._announce_winner(alive[0].peer_id)
 	else:
 		_set_dead_state()
+		# Single player: show death overlay
+		var main_node = get_tree().current_scene
+		if main_node and main_node.has_method("_display_death_overlay"):
+			main_node._display_death_overlay(1, 1)
 
 @rpc("any_peer", "reliable")
 func _broadcast_death():
