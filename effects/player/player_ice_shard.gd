@@ -24,7 +24,8 @@ func _ready():
 func _is_caster(body: Node) -> bool:
 	if caster and body == caster:
 		return true
-	if caster_peer_id != 0 and body.has_method("get_multiplayer_authority"):
+	# Compare by peer only for player nodes; enemies are server-authoritative too.
+	if caster_peer_id != 0 and body.is_in_group("player") and body.has_method("get_multiplayer_authority"):
 		return body.get_multiplayer_authority() == caster_peer_id
 	return false
 
