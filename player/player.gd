@@ -59,7 +59,10 @@ func _ready():
 		if has_node("CooldownUI/LevelContainer"):
 			$CooldownUI/LevelContainer.visible = false
 
-	global_position = GameState.get_spawn_position(peer_id)
+	# Only set position from GameState in single-player; in multiplayer, position is correctly
+	# set by main.gd _spawn_player (spawn_function) on both server and clients.
+	if multiplayer.multiplayer_peer == null:
+		global_position = GameState.get_spawn_position(peer_id)
 
 	if character_data == null:
 		character_data = GameState.get_selected_character(peer_id)
