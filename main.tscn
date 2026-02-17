@@ -26,6 +26,8 @@ spawn_path = NodePath("..")
 
 [node name="EffectsContainer" type="Node2D" parent="." groups=["effects_container"]]
 
+[node name="RPCEffectsContainer" type="Node2D" parent="."]
+
 [node name="EffectSpawner" type="MultiplayerSpawner" parent="EffectsContainer"]
 spawn_path = NodePath("..")
 

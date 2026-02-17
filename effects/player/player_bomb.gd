@@ -6,7 +6,7 @@ var caster: Node2D
 
 func _ready():
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 	add_to_group("projectile")
 
 	var collision = CollisionShape2D.new()
@@ -67,7 +67,7 @@ func _explode() -> void:
 	var explosion = Area2D.new()
 	explosion.add_to_group("explosion")
 	explosion.collision_layer = 0
-	explosion.collision_mask = 2
+	explosion.collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()

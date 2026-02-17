@@ -21,6 +21,7 @@ const EFFECT_SCENES = [
 @onready var players_container = $PlayersContainer
 @onready var player_spawner = $PlayersContainer/PlayerSpawner
 @onready var effect_spawner = $EffectsContainer/EffectSpawner
+@onready var rpc_effects_container = $RPCEffectsContainer
 @onready var enemy_spawner = $EnemiesContainer/EnemySpawner
 @onready var collectible_spawner = $CollectiblesContainer/CollectibleSpawner
 
@@ -28,9 +29,8 @@ func _ready():
 	collectible_spawner.add_spawnable_scene("res://collectibles/rune/rune.tscn")
 	collectible_spawner.add_spawnable_scene("res://collectibles/ore/ore.tscn")
 
-	for path in EFFECT_SCENES:
-		if ResourceLoader.exists(path):
-			effect_spawner.add_spawnable_scene(path)
+	# ไม่ลงทะเบียน scene กับ EffectSpawner เพื่อป้องกัน auto-replicate/despawn conflict
+	# ใช้ RPC (spawn_effect_sync) แทนสำหรับ sync effects ไป clients
 
 	if multiplayer.multiplayer_peer != null:
 		player_spawner.spawn_function = _spawn_player
@@ -122,24 +122,74 @@ func _spawn_enemy(data: Variant) -> Node:
 	var camp_path = dict.get("camp_path", "")
 	var is_leader = dict.get("is_leader", false)
 	var xp_value = dict.get("xp_value", 25)
-	var leader_stats = dict.get("leader_stats")
-	var minion_stats = dict.get("minion_stats")
-	var leader_skill = dict.get("leader_skill")
+	var leader_stats_path = dict.get("leader_stats_path", "")
+	var minion_stats_path = dict.get("minion_stats_path", "")
+	var leader_skill_path = dict.get("leader_skill_path", "")
 
 	var enemy = ENEMY_SCENE.instantiate()
 	enemy.global_position = pos
 	enemy.xp_value = xp_value
 	if camp_path:
 		enemy.set_meta("camp_path", camp_path)
-	if leader_stats or minion_stats:
-		if is_leader and leader_stats:
-			enemy.enemy_stats = leader_stats
-			enemy.leader_skill = leader_skill
-		elif minion_stats:
-			enemy.enemy_stats = minion_stats
+	if leader_stats_path or minion_stats_path:
+		if is_leader and leader_stats_path:
+			enemy.enemy_stats = load(leader_stats_path) as EnemyStats
+			enemy.leader_skill = load(leader_skill_path) as EnemySkillData if leader_skill_path else null
+		elif minion_stats_path:
+			enemy.enemy_stats = load(minion_stats_path) as EnemyStats
 			enemy.leader_skill = null
 	enemy.set_camp(null, camp_center, patrol_radius, leash_range, aggro_timeout)
 	return enemy
+
+var _effect_spawn_id: int = 0
+
+func get_next_effect_id() -> int:
+	_effect_spawn_id += 1
+	return _effect_spawn_id
+
+func _spawn_effect(data: Variant) -> Node:
+	var dict = data as Dictionary
+	var effect = _create_effect_from_data(dict)
+	var sid = dict.get("spawn_id", 0)
+	effect.name = "Effect_%d" % sid if sid > 0 else "Effect_%d_%d" % [Time.get_ticks_msec(), randi()]
+	return effect
+
+func _create_effect_from_data(data: Dictionary) -> Node:
+	var scene_path = data.get("scene", "")
+	var pos = data.get("pos", Vector2.ZERO)
+	if scene_path.is_empty() or not ResourceLoader.exists(scene_path):
+		return Node.new()
+	var scene = load(scene_path) as PackedScene
+	var effect = scene.instantiate()
+	effect.global_position = pos
+	var prop_names = ["direction", "damage", "max_range", "effect_color", "caster_peer_id", "target_position", "explosion_radius", "breath_type"]
+	for p in prop_names:
+		if data.has(p):
+			var val = data[p]
+			if p == "effect_color" and val is Array:
+				val = Color(val[0], val[1], val[2], val[3]) if val.size() >= 4 else Color.WHITE
+			effect.set(p, val)
+	return effect
+
+## สร้าง effect บน server และ sync ไป clients ผ่าน RPC
+## ใช้ RPCEffectsContainer (ไม่ใช่ EffectsContainer) เพื่อไม่ให้ EffectSpawner track และส่ง despawn ที่ client ไม่มี
+func spawn_effect_sync(effect_data: Dictionary) -> Node:
+	var effect = _create_effect_from_data(effect_data)
+	if effect is Node and effect.get_parent() == null:
+		rpc_effects_container.add_child(effect, true)
+	if multiplayer.multiplayer_peer != null and multiplayer.is_server():
+		_sync_effect_to_clients.rpc(effect_data)
+	return effect
+
+@rpc("any_peer", "reliable")
+func _sync_effect_to_clients(effect_data: Dictionary) -> void:
+	if multiplayer.is_server():
+		return
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	var effect = _create_effect_from_data(effect_data)
+	if effect is Node and effect.get_parent() == null:
+		rpc_effects_container.add_child(effect, true)
 
 func _trigger_enemy_camp_spawns() -> void:
 	for camp in get_tree().get_nodes_in_group("enemy_camp"):

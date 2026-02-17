@@ -1,11 +1,12 @@
 extends BaseProjectile
 
 var caster: Node2D
+var caster_peer_id: int = 0  # Used when caster not set (multiplayer replicated)
 var _hit_targets: Array = []
 
 func _ready():
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 	add_to_group("projectile")
 	speed = 500.0
 
@@ -20,13 +21,20 @@ func _ready():
 
 	_setup_visuals()
 
+func _is_caster(body: Node) -> bool:
+	if caster and body == caster:
+		return true
+	if caster_peer_id != 0 and body.has_method("get_multiplayer_authority"):
+		return body.get_multiplayer_authority() == caster_peer_id
+	return false
+
 func _on_area_entered(area: Area2D) -> void:
 	var target = area.get_parent()
-	if target and target != caster and target.has_method("take_damage"):
+	if target and not _is_caster(target) and target.has_method("take_damage"):
 		_do_hit(target)
 
 func _on_body_entered(body: Node2D) -> void:
-	if body.has_method("take_damage") and body != caster:
+	if body.has_method("take_damage") and not _is_caster(body):
 		_do_hit(body)
 
 func _do_hit(target: Node2D) -> void:
@@ -34,7 +42,13 @@ func _do_hit(target: Node2D) -> void:
 		return
 	_hit_targets.append(target)
 	if multiplayer.multiplayer_peer == null or multiplayer.is_server():
-		target.take_damage(damage, caster)
+		var attacker = caster
+		if not attacker and caster_peer_id != 0:
+			for p in get_tree().get_nodes_in_group("player"):
+				if p.get_multiplayer_authority() == caster_peer_id:
+					attacker = p
+					break
+		target.take_damage(damage, attacker)
 		if target.has_method("apply_slow"):
 			target.apply_slow("ice_blast", 5.0, 3.0)
 	_create_impact_particles()

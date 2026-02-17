@@ -23,6 +23,22 @@ var has_direction_sprites: bool = false
 @onready var level_label = $CooldownUI/LevelContainer/LevelLabel
 @onready var xp_bar = $CooldownUI/LevelContainer/XPBar
 
+func _enter_tree():
+	if multiplayer.multiplayer_peer != null and has_node("MultiplayerSynchronizer"):
+		var sync = $MultiplayerSynchronizer
+		var config = SceneReplicationConfig.new()
+		config.add_property(NodePath(".:position"))
+		config.add_property(NodePath(".:velocity"))
+		config.add_property(NodePath(".:health"))
+		config.add_property(NodePath(".:max_health"))
+		config.add_property(NodePath(".:aim_direction"))
+		config.property_set_replication_mode(NodePath(".:position"), SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
+		config.property_set_replication_mode(NodePath(".:velocity"), SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
+		config.property_set_replication_mode(NodePath(".:aim_direction"), SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
+		config.property_set_replication_mode(NodePath(".:health"), SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
+		config.property_set_replication_mode(NodePath(".:max_health"), SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
+		sync.replication_config = config
+
 func _ready():
 	add_to_group("player")
 	peer_id = get_multiplayer_authority()
@@ -36,6 +52,8 @@ func _ready():
 		if is_local:
 			cam.make_current()
 	if not is_local:
+		if has_node("CooldownUI/HealthBar"):
+			$CooldownUI/HealthBar.visible = false
 		if has_node("CooldownUI/HBoxContainer"):
 			$CooldownUI/HBoxContainer.visible = false
 		if has_node("CooldownUI/LevelContainer"):
@@ -68,21 +86,6 @@ func _ready():
 
 	GameState.level_changed.connect(_on_level_changed)
 	GameState.xp_gained.connect(_on_xp_gained)
-
-	if multiplayer.multiplayer_peer != null and has_node("MultiplayerSynchronizer"):
-		var sync = $MultiplayerSynchronizer
-		var config = SceneReplicationConfig.new()
-		config.add_property(NodePath(".:position"))
-		config.add_property(NodePath(".:velocity"))
-		config.add_property(NodePath(".:health"))
-		config.add_property(NodePath(".:max_health"))
-		config.add_property(NodePath(".:aim_direction"))
-		config.property_set_replication_mode(NodePath(".:position"), SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
-		config.property_set_replication_mode(NodePath(".:velocity"), SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
-		config.property_set_replication_mode(NodePath(".:aim_direction"), SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
-		config.property_set_replication_mode(NodePath(".:health"), SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
-		config.property_set_replication_mode(NodePath(".:max_health"), SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
-		sync.replication_config = config
 
 func _update_cooldown_indicators():
 	if primary_indicator and character_data and character_data.primary_ability:
@@ -190,11 +193,16 @@ func use_primary_ability():
 		var ability = character_data.primary_ability
 		var mouse_pos = get_global_mouse_position()
 		primary_timer = GameState.get_scaled_cooldown(ability.cooldown, ability.cooldown_scale_percent, peer_id)
+		# สร้าง effect ทันทีบนเครื่องตัวเอง (client-side prediction)
+		if ability.ability_script:
+			ability.ability_script.execute(self, ability, mouse_pos)
 		if multiplayer.multiplayer_peer != null:
-			_request_ability.rpc_id(1, "primary", aim_direction, mouse_pos)
-		else:
-			if ability.ability_script:
-				ability.ability_script.execute(self, ability, mouse_pos)
+			if multiplayer.is_server():
+				# Host: broadcast visual ไปทุก client
+				_show_ability_visual.rpc("primary", global_position, aim_direction, mouse_pos)
+			else:
+				# Client: ส่งไป server เพื่อ damage + broadcast ไป peers อื่น
+				_request_ability.rpc_id(1, "primary", aim_direction, mouse_pos)
 
 func use_secondary_ability():
 	if not GameState.is_secondary_unlocked(peer_id):
@@ -203,19 +211,40 @@ func use_secondary_ability():
 		var ability = character_data.secondary_ability
 		var mouse_pos = get_global_mouse_position()
 		secondary_timer = GameState.get_scaled_cooldown(ability.cooldown, ability.cooldown_scale_percent, peer_id)
+		if ability.ability_script:
+			ability.ability_script.execute(self, ability, mouse_pos)
 		if multiplayer.multiplayer_peer != null:
-			_request_ability.rpc_id(1, "secondary", aim_direction, mouse_pos)
-		else:
-			if ability.ability_script:
-				ability.ability_script.execute(self, ability, mouse_pos)
+			if multiplayer.is_server():
+				_show_ability_visual.rpc("secondary", global_position, aim_direction, mouse_pos)
+			else:
+				_request_ability.rpc_id(1, "secondary", aim_direction, mouse_pos)
 
 @rpc("any_peer", "reliable")
 func _request_ability(_type: String, _direction: Vector2, _mouse_pos: Vector2):
 	if not multiplayer.is_server():
 		return
+	# Server execute สำหรับ damage
 	var ability = character_data.primary_ability if _type == "primary" else (character_data.secondary_ability if character_data else null)
 	if ability and ability.ability_script:
 		ability.ability_script.execute(self, ability, _mouse_pos)
+	# Broadcast visual ไป peers อื่น (ไม่รวมคนยิง เพราะเขาสร้างเองแล้ว)
+	var sender = multiplayer.get_remote_sender_id()
+	for pid in multiplayer.get_peers():
+		if pid != sender:
+			_show_ability_visual.rpc_id(pid, _type, global_position, _direction, _mouse_pos)
+
+@rpc("any_peer", "reliable")
+func _show_ability_visual(_type: String, _pos: Vector2, _direction: Vector2, _mouse_pos: Vector2):
+	# สร้าง visual effect บนเครื่องที่รับ (ไม่มี damage เพราะไม่ใช่ server)
+	var ability = character_data.primary_ability if _type == "primary" else (character_data.secondary_ability if character_data else null)
+	if ability and ability.ability_script:
+		var old_pos = global_position
+		var old_aim = aim_direction
+		global_position = _pos
+		aim_direction = _direction
+		ability.ability_script.execute(self, ability, _mouse_pos)
+		global_position = old_pos
+		aim_direction = old_aim
 
 @rpc("authority", "reliable")
 func _broadcast_spectral_visual(pos: Vector2, angle: float, range_dist: float):
@@ -241,20 +270,39 @@ func _broadcast_spectral_visual(pos: Vector2, angle: float, range_dist: float):
 func take_damage(amount, _attacker = null):
 	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
 		return
-	var reduced = int(amount * (1.0 - GameState.get_damage_reduction(peer_id)))
-	health -= max(reduced, 1)
+	var reduced = max(int(amount * (1.0 - GameState.get_damage_reduction(peer_id))), 1)
+	health -= reduced
 	update_health_bar()
+
+	# เมื่อโดนยิงจาก host ต้อง RPC ไปให้ client apply damage ด้วย เพราะ client เป็น authority จะ override ค่า health
+	if multiplayer.multiplayer_peer != null:
+		var authority = get_multiplayer_authority()
+		if authority != 1:  # ไม่ใช่ server = เป็น player ของ client
+			_apply_damage.rpc_id(authority, reduced)
 
 	if health <= 0:
 		die()
 
+@rpc("any_peer", "reliable")
+func _apply_damage(amount: int):
+	# รับได้เฉพาะจาก server เท่านั้น (ป้องกัน cheat)
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	health = max(0, health - amount)
+	update_health_bar()
+
 func take_zone_damage(amount: float):
 	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
 		return
-	health -= int(amount)
+	var dmg = int(amount)
+	health -= dmg
 	if health < 0:
 		health = 0
 	update_health_bar()
+	if multiplayer.multiplayer_peer != null:
+		var authority = get_multiplayer_authority()
+		if authority != 1:
+			_apply_damage.rpc_id(authority, dmg)
 	if health <= 0:
 		die()
 
@@ -285,8 +333,10 @@ func die():
 		set_physics_process(true)
 		update_health_bar()
 
-@rpc("authority", "reliable")
+@rpc("any_peer", "reliable")
 func _broadcast_death():
+	if multiplayer.get_remote_sender_id() != 1:
+		return
 	visible = false
 	set_physics_process(false)
 

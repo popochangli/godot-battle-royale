@@ -51,9 +51,9 @@ func _try_spawn_rune():
 	rune.global_position = spawn_pos
 	var container = get_tree().get_first_node_in_group("collectibles_container")
 	if container:
-		container.add_child(rune)
+		container.add_child(rune, true)
 	else:
-		get_parent().add_child(rune)
+		get_parent().add_child(rune, true)
 
 func _try_spawn_ore():
 	var current_ores = get_tree().get_nodes_in_group("ore").size()
@@ -69,9 +69,9 @@ func _try_spawn_ore():
 	ore.global_position = spawn_pos
 	var container = get_tree().get_first_node_in_group("collectibles_container")
 	if container:
-		container.add_child(ore)
+		container.add_child(ore, true)
 	else:
-		get_parent().add_child(ore)
+		get_parent().add_child(ore, true)
 
 func _get_random_zone_position() -> Vector2:
 	if zone_manager == null or not zone_manager.has_method("get_zone_info"):

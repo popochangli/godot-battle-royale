@@ -12,6 +12,11 @@ const MAX_PLAYERS = 4
 ## peer_id -> {character_path: String, spawn_pos: Vector2, ready: bool, character_name: String}
 var players_info: Dictionary = {}
 
+## Set before Host/Join, used by player_name_entry
+var my_player_name: String = ""
+var connection_mode: String = "host"
+var pending_join_ip: String = ""
+
 func _ready():
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
@@ -62,4 +67,6 @@ func get_my_id() -> int:
 func reset() -> void:
 	multiplayer.multiplayer_peer = null
 	players_info.clear()
+	my_player_name = ""
+	pending_join_ip = ""
 	GameState.reset_all()

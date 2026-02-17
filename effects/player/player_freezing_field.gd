@@ -13,7 +13,7 @@ var _enemies_in_field: Dictionary = {}
 
 func _ready():
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()

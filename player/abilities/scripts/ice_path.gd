@@ -16,5 +16,5 @@ static func execute(caster: Node2D, data: AbilityData, mouse_pos: Vector2 = Vect
 	var container = caster.get_tree().get_first_node_in_group("effects_container")
 	if container == null:
 		container = caster.get_parent()
-	container.add_child(ice_path)
+	container.add_child(ice_path, true)
 	ice_path.global_position = caster.global_position

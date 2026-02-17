@@ -29,5 +29,5 @@ static func _spawn_wave(caster: Node2D, data: AbilityData, direction: Vector2, t
 	var container = caster.get_tree().get_first_node_in_group("effects_container")
 	if container == null:
 		container = caster.get_parent()
-	container.add_child(wave)
+	container.add_child(wave, true)
 	wave.global_position = caster.global_position

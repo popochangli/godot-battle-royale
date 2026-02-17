@@ -35,9 +35,9 @@ static func execute(caster: Node2D, data: AbilityData, mouse_pos: Vector2 = Vect
 
 	var container = caster.get_tree().get_first_node_in_group("effects_container")
 	if container:
-		container.add_child(area)
+		container.add_child(area, true)
 	else:
-		caster.get_parent().add_child(area)
+		caster.get_parent().add_child(area, true)
 
 	var mp = caster.get_tree().multiplayer
 	if mp.multiplayer_peer != null and caster.has_method("_broadcast_spectral_visual"):

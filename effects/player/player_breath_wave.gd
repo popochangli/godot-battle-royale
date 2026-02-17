@@ -5,7 +5,7 @@ var caster: Node2D
 
 func _ready():
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 	add_to_group("projectile")
 	speed = 400.0
 

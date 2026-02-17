@@ -49,9 +49,9 @@ static func execute(caster: Node2D, data: AbilityData, mouse_pos: Vector2 = Vect
 
 		var container = caster.get_tree().get_first_node_in_group("effects_container")
 		if container:
-			container.add_child(illusion)
+			container.add_child(illusion, true)
 		else:
-			caster.get_parent().add_child(illusion)
+			caster.get_parent().add_child(illusion, true)
 
 		var player_damage = 10.0
 		illusion.setup(target, player_damage * 0.3, 3.0, 5.0, caster)

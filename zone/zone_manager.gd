@@ -48,8 +48,8 @@ func _ready():
 
 	if multiplayer.multiplayer_peer != null:
 		var sync = MultiplayerSynchronizer.new()
+		sync.name = "ZoneSync"
 		sync.set_multiplayer_authority(1)
-		add_child(sync)
 		var config = SceneReplicationConfig.new()
 		config.add_property(NodePath(".:current_zone_center"))
 		config.add_property(NodePath(".:current_zone_radius"))
@@ -62,6 +62,7 @@ func _ready():
 		config.add_property(NodePath(".:game_elapsed_time"))
 		config.add_property(NodePath(".:phase_elapsed_time"))
 		sync.replication_config = config
+		add_child(sync, true)
 
 func _calculate_map_bounds():
 	var tilemap = get_tree().get_first_node_in_group("tilemap")

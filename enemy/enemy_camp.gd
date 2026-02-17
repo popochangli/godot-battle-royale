@@ -109,9 +109,9 @@ func _spawn_configured_enemies():
 				"camp_path": camp_path,
 				"is_leader": true,
 				"xp_value": int(active_config.leader_stats.xp_value * xp_multiplier) if active_config.leader_stats else 25,
-				"leader_stats": active_config.leader_stats,
-				"minion_stats": active_config.minion_stats,
-				"leader_skill": active_config.leader_skill
+				"leader_stats_path": active_config.leader_stats.resource_path if active_config.leader_stats else "",
+				"minion_stats_path": active_config.minion_stats.resource_path if active_config.minion_stats else "",
+				"leader_skill_path": active_config.leader_skill.resource_path if active_config.leader_skill else ""
 			}
 			spawner.spawn(leader_data)
 
@@ -129,9 +129,9 @@ func _spawn_configured_enemies():
 					"camp_path": camp_path,
 					"is_leader": false,
 					"xp_value": int(active_config.minion_stats.xp_value * xp_multiplier) if active_config.minion_stats else 15,
-					"leader_stats": active_config.leader_stats,
-					"minion_stats": active_config.minion_stats,
-					"leader_skill": null
+					"leader_stats_path": active_config.leader_stats.resource_path if active_config.leader_stats else "",
+					"minion_stats_path": active_config.minion_stats.resource_path if active_config.minion_stats else "",
+					"leader_skill_path": ""
 				}
 				spawner.spawn(minion_data)
 		return

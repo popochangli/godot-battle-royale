@@ -48,7 +48,7 @@ func _detonate() -> void:
 	area.monitorable = false
 	area.monitoring = true
 	area.collision_layer = 0
-	area.collision_mask = 2
+	area.collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()

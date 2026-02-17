@@ -33,6 +33,11 @@ func _ready():
 
 	multiplayer.connected_to_server.connect(_on_connection_succeeded)
 
+	if not multiplayer.is_server():
+		# Client: send our name to server
+		await get_tree().process_frame
+		_submit_player_name.rpc_id(1, multiplayer.get_unique_id(), NetworkManager.my_player_name)
+
 func _build_character_buttons() -> void:
 	for path in CHARACTER_PATHS:
 		var character_data: CharacterData = load(path)
@@ -61,17 +66,24 @@ func _broadcast_state() -> void:
 
 func _sync_initial_state() -> void:
 	var my_id = multiplayer.get_unique_id()
+	var my_name = NetworkManager.my_player_name if NetworkManager.my_player_name else ""
 	NetworkManager.players_info[my_id] = {
 		"character_path": "",
 		"spawn_pos": Vector2.ZERO,
 		"ready": false,
-		"character_name": ""
+		"character_name": my_name
 	}
 	_broadcast_state()
 
 func _on_connection_succeeded() -> void:
 	if not multiplayer.is_server():
 		_request_full_sync.rpc_id(1)
+
+@rpc("any_peer", "reliable")
+func _submit_player_name(peer_id: int, name_text: String) -> void:
+	if multiplayer.is_server() and NetworkManager.players_info.has(peer_id):
+		NetworkManager.players_info[peer_id]["character_name"] = name_text if name_text else "Player " + str(peer_id)
+		_broadcast_state()
 
 @rpc("any_peer", "reliable")
 func _request_full_sync() -> void:
@@ -105,11 +117,12 @@ func _refresh_player_display() -> void:
 		var label = Label.new()
 		var is_me = peer_id == multiplayer.get_unique_id()
 		var name_str = info["character_name"] if info["character_name"] else "Player " + str(peer_id)
+		var char_str = ""
 		if info["character_path"]:
 			var cd: CharacterData = load(info["character_path"]) as CharacterData
 			if cd:
-				name_str = cd.display_name
-		label.text = name_str + (" (You)" if is_me else "") + " - " + ("Ready" if info["ready"] else "Not ready")
+				char_str = " - " + cd.display_name
+		label.text = name_str + char_str + (" (You)" if is_me else "") + " - " + ("Ready" if info["ready"] else "Not ready")
 		player_list.add_child(label)
 
 func _on_player_connected(peer_id: int) -> void:
@@ -139,9 +152,7 @@ func _set_character(peer_id: int, path: String) -> void:
 	if multiplayer.is_server():
 		if NetworkManager.players_info.has(peer_id):
 			NetworkManager.players_info[peer_id]["character_path"] = path
-			var cd: CharacterData = load(path) as CharacterData
-			if cd:
-				NetworkManager.players_info[peer_id]["character_name"] = cd.display_name
+			# Keep character_name as player name, don't overwrite with character
 			_broadcast_state()
 
 func _on_ready_pressed() -> void:

@@ -30,9 +30,8 @@ func _set_status(text: String) -> void:
 
 func _on_host_pressed() -> void:
 	NetworkManager.reset()
-	_set_status("Starting server...")
-	host_button.disabled = true
-	NetworkManager.host_game()
+	NetworkManager.connection_mode = "host"
+	get_tree().change_scene_to_file("res://ui/player_name_entry.tscn")
 
 func _on_join_pressed() -> void:
 	var ip = ip_input.text.strip_edges()
@@ -40,21 +39,17 @@ func _on_join_pressed() -> void:
 		_set_status("Enter IP address")
 		return
 	NetworkManager.reset()
-	_set_status("Connecting...")
-	join_button.disabled = true
-	NetworkManager.join_game(ip)
+	NetworkManager.connection_mode = "join"
+	NetworkManager.pending_join_ip = ip
+	get_tree().change_scene_to_file("res://ui/player_name_entry.tscn")
 
 func _on_single_player_pressed() -> void:
 	NetworkManager.reset()
 	get_tree().change_scene_to_file("res://ui/character_select.tscn")
 
 func _on_connection_succeeded() -> void:
-	if NetworkManager.is_host():
-		_set_status("Waiting for players...")
-		get_tree().change_scene_to_file("res://ui/lobby.tscn")
-	else:
-		_set_status("Connected! Waiting for host...")
-		get_tree().change_scene_to_file("res://ui/lobby.tscn")
+	# Handled by player_name_entry now (main_menu only shows after disconnect/return)
+	pass
 
 func _on_connection_failed() -> void:
 	_set_status("Connection failed")

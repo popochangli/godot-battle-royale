@@ -11,7 +11,7 @@ var _detonated: bool = false
 func _ready():
 	add_to_group("techies_mines")
 	collision_layer = 0
-	collision_mask = 2
+	collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 	set_meta("owner_id", owner_id)
 	set_meta("scaled_damage", damage)
 
@@ -63,7 +63,7 @@ func _do_explosion(explosion_pos: Vector2) -> void:
 	var explosion = Area2D.new()
 	explosion.add_to_group("explosion")
 	explosion.collision_layer = 0
-	explosion.collision_mask = 2
+	explosion.collision_mask = 3  # Layer 1 (Player) + 2 (Enemy)
 
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()

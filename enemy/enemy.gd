@@ -101,8 +101,8 @@ func _ready():
 	if multiplayer.multiplayer_peer != null:
 		set_multiplayer_authority(1)
 		var sync = MultiplayerSynchronizer.new()
+		sync.name = "EnemySync"
 		sync.set_multiplayer_authority(1)
-		add_child(sync)
 		var config = SceneReplicationConfig.new()
 		config.add_property(NodePath(".:position"))
 		config.add_property(NodePath(".:health"))
@@ -110,6 +110,7 @@ func _ready():
 		config.add_property(NodePath(".:facing_direction"))
 		config.add_property(NodePath(".:current_visual_state"))
 		sync.replication_config = config
+		add_child(sync, true)
 
 func _physics_process(delta):
 	if multiplayer.multiplayer_peer != null and not multiplayer.is_server():
@@ -203,6 +204,11 @@ func _process_returning_state(_delta):
 	_update_facing(camp_center)
 
 func _pick_new_idle_target():
+	if not is_inside_tree():
+		return  # set_camp may be called before enemy is added; _ready will call again
+	var tree = get_tree()
+	if tree == null:
+		return
 	# NEW: Collision avoidance - try multiple attempts to find clear position
 	var max_attempts = 5
 	for attempt in max_attempts:
@@ -212,7 +218,7 @@ func _pick_new_idle_target():
 
 		# Check if any enemy is near this target
 		var is_clear = true
-		for other in get_tree().get_nodes_in_group("enemy"):
+		for other in tree.get_nodes_in_group("enemy"):
 			if other != self and other.global_position.distance_to(target) < 40:
 				is_clear = false
 				break
@@ -275,9 +281,9 @@ func _shoot_projectile(_direction: Vector2) -> void:
 	projectile.trail_color = enemy_stats.color_tint if enemy_stats else Color.RED
 	var effects = get_tree().get_first_node_in_group("effects_container")
 	if effects:
-		effects.add_child(projectile)
+		effects.add_child(projectile, true)
 	else:
-		get_parent().add_child(projectile)
+		get_parent().add_child(projectile, true)
 	projectile.global_position = global_position
 
 func attack_player():
