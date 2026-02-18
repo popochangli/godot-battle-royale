@@ -31,10 +31,10 @@ var shrink_start_radius: float
 
 var phase_config: Array = [
 	{"wait_time": 0.0, "size_percent": 1.0, "shrink_duration": 0.0},
-	{"wait_time": 180.0, "size_percent": 0.8, "shrink_duration": 15.0},
-	{"wait_time": 120.0, "size_percent": 0.5, "shrink_duration": 10.0},
-	{"wait_time": 120.0, "size_percent": 0.2, "shrink_duration": 5.0},
-	{"wait_time": 60.0, "size_percent": 0.1, "shrink_duration": 3.0},
+	{"wait_time": 30.0, "size_percent": 0.8, "shrink_duration": 15.0},
+	{"wait_time": 30.0, "size_percent": 0.5, "shrink_duration": 10.0},
+	{"wait_time": 15.0, "size_percent": 0.2, "shrink_duration": 5.0},
+	{"wait_time": 15.0, "size_percent": 0.1, "shrink_duration": 3.0},
 ]
 
 var accumulated_damage: Dictionary = {}
